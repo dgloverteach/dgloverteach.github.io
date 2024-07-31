@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Math Skills Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .question {
+            margin: 10px 0;
+        }
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Basic Math Skills Generator</h1>
+        
+        <form id="mathForm">
+            <fieldset>
+                <legend>Select a type of math question:</legend>
+                <label>
+                    <input type="radio" name="questionType" value="addition" checked>
+                    Addition
+                </label><br>
+                <label>
+                    <input type="radio" name="questionType" value="subtraction">
+                    Subtraction
+                </label><br>
+                <label>
+                    <input type="radio" name="questionType" value="multiplication">
+                    Multiplication
+                </label><br>
+                <label>
+                    <input type="radio" name="questionType" value="rounding">
+                    Rounding
+                </label>
+            </fieldset>
+
+            <button type="button" onclick="generateQuestion()">Generate Question</button>
+        </form>
+
+        <div class="question" id="questionContainer"></div>
+
+        <div class="results">
+            <button type="button" onclick="checkAnswer()">Check Answer</button>
+            <p id="resultMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = {};
+        
+        function generateQuestion() {
+            const questionType = document.querySelector('input[name="questionType"]:checked').value;
+            const questionContainer = document.getElementById('questionContainer');
+            let num1, num2, answer;
+
+            switch(questionType) {
+                case 'addition':
+                    num1 = Math.floor(Math.random() * 100);
+                    num2 = Math.floor(Math.random() * 100);
+                    answer = num1 + num2;
+                    questionContainer.innerHTML = `<p>What is ${num1} + ${num2}?</p><input type="text" id="userAnswer">`;
+                    break;
+                case 'subtraction':
+                    num1 = Math.floor(Math.random() * 100);
+                    num2 = Math.floor(Math.random() * num1); // ensure num2 <= num1
+                    answer = num1 - num2;
+                    questionContainer.innerHTML = `<p>What is ${num1} - ${num2}?</p><input type="text" id="userAnswer">`;
+                    break;
+                case 'multiplication':
+                    num1 = Math.floor(Math.random() * 12) + 1;
+                    num2 = Math.floor(Math.random() * 12) + 1;
+                    answer = num1 * num2;
+                    questionContainer.innerHTML = `<p>What is ${num1} × ${num2}?</p><input type="text" id="userAnswer">`;
+                    break;
+                case 'rounding':
+                    num1 = (Math.random() * 100).toFixed(2);
+                    answer = Math.round(num1);
+                    questionContainer.innerHTML = `<p>Round ${num1} to the nearest whole number.</p><input type="text" id="userAnswer">`;
+                    break;
+                default:
+                    questionContainer.innerHTML = `<p>Please select a type of math question.</p>`;
+            }
+
+            currentQuestion.answer = answer;
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('userAnswer').value;
+            const resultMessage = document.getElementById('resultMessage');
+
+            if (userAnswer == currentQuestion.answer) {
+                resultMessage.textContent = "Correct!";
+            } else {
+                resultMessage.textContent = "Incorrect. The correct answer is " + currentQuestion.answer + ".";
+            }
+        }
+    </script>
+</body>
+</html>
