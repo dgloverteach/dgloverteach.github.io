@@ -32,15 +32,9 @@
             font-weight: bold;
             margin-top: 20px;
         }
-        .btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .notification {
+        #notification {
             color: red;
             margin-top: 10px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -75,12 +69,11 @@
     <div id="questionContainer">
         <h2 id="question"></h2>
         <input type="text" id="answerInput" placeholder="Enter your answer">
-        <div class="btn-container">
-            <button onclick="checkAnswer()">Submit</button>
-            <button id="nextButton" onclick="nextQuestion()" disabled>Next Question</button>
-        </div>
-        <div id="notification" class="notification"></div>
+        <button onclick="checkAnswer()">Submit</button>
+        <button onclick="nextQuestion()">Next Question</button>
     </div>
+
+    <div id="notification"></div>
 
     <div>
         <button onclick="saveHistory()">Save History to PDF</button>
@@ -132,15 +125,20 @@
     });
 
     function showInstructions() {
-        const showAgain = confirm("Instructions - READ CAREFULLY!!\n\n" +
-              "1. Enter your Name and Student Number.\n" +
-              "2. Select the type of question - (Ohm's Law or Watts Law).\n" +
-              "3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.\n" +
-              "4. Your answer will be checked, and you can see your results.\n" +
-              "5. Save your question history as a PDF when needed.\n" +
-              "6. Use the calculator for any calculations.\n\n" +
-              "Do you want to see these instructions next time?");
-        localStorage.setItem('showInstructionsNextTime', showAgain);
+        const showAgain = localStorage.getItem('showInstructionsNextTime') !== 'false';
+        
+        if (showAgain) {
+            const userResponse = confirm("Instructions - READ CAREFULLY!!\n\n" +
+                  "1. Enter your Name and Student Number.\n" +
+                  "2. Select the type of question - 'Random' is selected by default (Ohm's Law or Watts Law).\n" +
+                  "3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.\n" +
+                  "4. Your answer will be checked, and you can see your results.\n" +
+                  "5. Click 'Next Question' to move on after submitting your answer.\n" +
+                  "6. Save your question history as a PDF when needed. Pay attention to where you save it.\n" +
+                  "7. Use the calculator for any calculations.\n\n" +
+                  "A D.Glover program");
+            localStorage.setItem('showInstructionsNextTime', userResponse ? 'true' : 'false');
+        }
     }
 
     function generateOhmsLawQuestion() {
@@ -217,16 +215,13 @@
         document.getElementById('question').innerText = currentQuestion;
         document.getElementById('answerInput').value = '';
         document.getElementById('result').innerText = '';
-        document.getElementById('nextButton').disabled = true;
-        document.getElementById('notification').innerText = '';
+        document.getElementById('notification').innerText = ''; // Clear notification
     }
 
     function checkAnswer() {
         const userAnswer = parseFloat(document.getElementById('answerInput').value);
         let result;
-        if (isNaN(userAnswer)) {
-            result = 'Please enter a valid number.';
-        } else if (Math.abs(userAnswer - currentAnswer) < 0.01) {
+        if (Math.abs(userAnswer - currentAnswer) < 0.01) {
             result = `Correct! Answer: ${currentAnswer} ${currentUnit}`;
             totalCorrect++;
         } else {
@@ -236,7 +231,7 @@
 
         history.push({question: currentQuestion, userAnswer, result, type: document.querySelector('input[name="questionType"]:checked').value});
         document.getElementById('result').innerText = result;
-        document.getElementById('nextButton').disabled = false;
+        document.getElementById('notification').innerText = 'Answer must be submitted before moving to the next question.';
     }
 
     function saveHistory() {
@@ -247,6 +242,7 @@
         const studentNumber = document.getElementById('studentNumber').value;
         const fileName = `${studentName}_${studentNumber}_Ohm's & Watt's Law Questions.pdf`;
 
+        doc.setFontSize(12);
         doc.text(`Student Name: ${studentName}`, 10, 10);
         doc.text(`Student Number: ${studentNumber}`, 10, 20);
 
@@ -254,7 +250,7 @@
         const totalQuestions = history.length;
         const ohmsCorrect = history.filter(entry => entry.type === "Ohm's Law" && entry.result.includes('Correct')).length;
         const wattsCorrect = history.filter(entry => entry.type === "Watts Law" && entry.result.includes('Correct')).length;
-        
+
         doc.text(`Total Questions Answered: ${totalQuestions}`, 10, 30);
         doc.text(`Total Correct: ${totalCorrect}`, 10, 40);
         doc.text(`Total Ohm's Law Correct: ${ohmsCorrect}`, 10, 50);
@@ -262,11 +258,11 @@
 
         let y = 70;
         history.forEach((entry, index) => {
-            doc.text(`${index + 1}. Question: ${entry.question}`, 10, y);
+            doc.text(`${index + 1}. Question: ${entry.question}`, 10, y, { maxWidth: 180 });
             y += 10;
-            doc.text(`Your Answer: ${entry.userAnswer}`, 10, y);
+            doc.text(`Your Answer: ${entry.userAnswer}`, 10, y, { maxWidth: 180 });
             y += 10;
-            doc.text(`Result: ${entry.result}`, 10, y);
+            doc.text(`Result: ${entry.result}`, 10, y, { maxWidth: 180 });
             y += 20;
             if (y > 280) {
                 doc.addPage();
@@ -288,6 +284,7 @@
         totalCorrect = 0;
         totalIncorrect = 0;
         document.getElementById('result').innerText = '';
+        document.getElementById('notification').innerText = ''; // Clear notification
         alert('History has been reset.');
     }
 
