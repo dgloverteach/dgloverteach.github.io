@@ -140,7 +140,7 @@
     });
 
     function showInstructions() {
-        const showAgain = localStorage.getItem('showInstructionsNextTime') !== 'false';
+        const showAgain = localStorage.getItem('showInstructionsNextTime') !== 'true';
         
         if (showAgain) {
             const userResponse = confirm("Instructions - READ CAREFULLY!!\n\n" +

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ohm's and Watts Law Question Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 48px);
+            gap: 10px;
+        }
+        .calculator button {
+            width: 48px;
+            height: 48px;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #notification {
+            color: red;
+            margin-top: 10px;
+        }
+        #instructions {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Ohm's and Watts Law Question Generator</h1>
+    <button onclick="showInstructions()">Show Instructions</button>
+
+    <div id="instructions" class="hidden">
+        <h2>Instructions</h2>
+        <p>1. Enter your Name and Student Number.</p>
+        <p>2. Select the type of question - (Ohm's Law or Watts Law).</p>
+        <p>3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.</p>
+        <p>4. Your answer will be checked, and you can see your results.</p>
+        <p>5. Save your question history as a PDF when needed.</p>
+        <p>6. Use the calculator for any calculations.</p>
+    </div>
+
+    <div>
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" placeholder="Enter your name">
+
+        <label for="studentNumber">Student Number:</label>
+        <input type="text" id="studentNumber" placeholder="Enter your student number">
+    </div>
+
+    <div>
+        <label>
+            <input type="radio" name="questionType" value="Random" checked>
+            Random
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Ohm's Law">
+            Ohm's Law
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Watts Law">
+            Watts Law
+        </label>
+    </div>
+
+    <div id="questionContainer">
+        <h2 id="question"></h2>
+        <input type="text" id="answerInput" placeholder="Enter your answer">
+        <button onclick="checkAnswer()">Submit</button>
+        <button onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="notification"></div>
+
+    <div>
+        <button onclick="saveHistory()">Save History to PDF</button>
+        <button onclick="confirmResetHistory()">Reset History</button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <button onclick="toggleCalculator()">Toggle Calculator</button>
+    <div id="calculator" class="hidden">
+        <input type="text" id="calcDisplay" disabled>
+        <div class="calculator">
+            <button onclick="addToExpression('1')">1</button>
+            <button onclick="addToExpression('2')">2</button>
+            <button onclick="addToExpression('3')">3</button>
+            <button onclick="addToExpression('/')">÷</button>
+            <button onclick="addToExpression('4')">4</button>
+            <button onclick="addToExpression('5')">5</button>
+            <button onclick="addToExpression('6')">6</button>
+            <button onclick="addToExpression('*')">x</button>
+            <button onclick="addToExpression('7')">7</button>
+            <button onclick="addToExpression('8')">8</button>
+            <button onclick="addToExpression('9')">9</button>
+            <button onclick="addToExpression('-')">-</button>
+            <button onclick="addToExpression('0')">0</button>
+            <button onclick="addToExpression('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="addToExpression('+')">+</button>
+            <button onclick="clearExpression()">C</button>
+        </div>
+        <div id="calcResult" class="result"></div>
+    </div>
+</div>
+
+<script>
+    let history = [];
+    let totalCorrect = 0;
+    let totalIncorrect = 0;
+    let currentQuestion = '';
+    let currentAnswer = 0;
+    let currentUnit = '';
+    let showInstructionsNextTime = localStorage.getItem('showInstructionsNextTime') !== 'false';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (showInstructionsNextTime) {
+            showInstructions();
+        }
+        nextQuestion();
+    });
+
+    function showInstructions() {
+        const instructionsElement = document.getElementById('instructions');
+        instructionsElement.classList.remove('hidden');
+        const showAgain = localStorage.getItem('showInstructionsNextTime') !== 'false';
+        
+        if (showAgain) {
+            const userResponse = confirm("Instructions - READ CAREFULLY!!\n\n" +
+                  "1. Enter your Name and Student Number.\n" +
+                  "2. Select the type of question - (Ohm's Law or Watts Law).\n" +
+                  "3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.\n" +
+                  "4. Your answer will be checked, and you can see your results.\n" +
+                  "5. Save your question history as a PDF when needed.\n" +
+                  "6. Use the calculator for any calculations.\n\n" +
+                  "Do you want to see these instructions next time?");
+            localStorage.setItem('showInstructionsNextTime', userResponse ? 'true' : 'false');
+        }
+    }
+
+    function generateOhmsLawQuestion() {
+        const variables = ['E', 'I', 'R'];
+        const unknown = variables[Math.floor(Math.random() * variables.length)];
+
+        let question, answer, unit;
+        if (unknown === 'E') {
+            const I = (Math.random() * 9.9 + 0.1).toFixed(2);
+            const R = (Math.random() * 999 + 1).toFixed(2);
+            question = `Calculate the voltage (E) when current (I) is ${I} A and resistance (R) is ${R} Ω.`;
+            answer = (I * R).toFixed(2);
+            unit = 'V';
+        } else if (unknown === 'I') {
+            const E = (Math.random() * 99 + 1).toFixed(2);
+            const R = (Math.random() * 999 + 1).toFixed(2);
+            question = `Calculate the current (I) when voltage (E) is ${E} V and resistance (R) is ${R} Ω.`;
+            answer = (E / R).toFixed(2);
+            unit = 'A';
+        } else {
+            const E = (Math.random() * 99 + 1).toFixed(2);
+            const I = (Math.random() * 9.9 + 0.1).toFixed(2);
+            question = `Calculate the resistance (R) when voltage (E) is ${E} V and current (I) is ${I} A.`;
+            answer = (E / I).toFixed(2);
+            unit = 'Ω';
+        }
+
+        return {question, answer, unit};
+    }
+
+    function generateWattsLawQuestion() {
+        const variables = ['P', 'I', 'E'];
+        const unknown = variables[Math.floor(Math.random() * variables.length)];
+
+        let question, answer, unit;
+        if (unknown === 'P') {
+            const I = (Math.random() * 9.9 + 0.1).toFixed(2);
+            const E = (Math.random() * 99 + 1).toFixed(2);
+            question = `Calculate the power (P) when current (I) is ${I} A and voltage (E) is ${E} V.`;
+            answer = (I * E).toFixed(2);
+            unit = 'W';
+        } else if (unknown === 'I') {
+            const P = (Math.random() * 99 + 1).toFixed(2);
+            const E = (Math.random() * 99 + 1).toFixed(2);
+            question = `Calculate the current (I) when power (P) is ${P} W and voltage (E) is ${E} V.`;
+            answer = (P / E).toFixed(2);
+            unit = 'A';
+        } else {
+            const P = (Math.random() * 99 + 1).toFixed(2);
+            const I = (Math.random() * 9.9 + 0.1).toFixed(2);
+            question = `Calculate the voltage (E) when power (P) is ${P} W and current (I) is ${I} A.`;
+            answer = (P / I).toFixed(2);
+            unit = 'V';
+        }
+
+        return {question, answer, unit};
+    }
+
+    function nextQuestion() {
+        const questionType = document.querySelector('input[name="questionType"]:checked').value;
+        let questionData;
+        if (questionType === "Random") {
+            const randomType = Math.random() < 0.5 ? "Ohm's Law" : "Watts Law";
+            questionData = randomType === "Ohm's Law" ? generateOhmsLawQuestion() : generateWattsLawQuestion();
+        } else if (questionType === "Ohm's Law") {
+            questionData = generateOhmsLawQuestion();
+        } else {
+            questionData = generateWattsLawQuestion();
+        }
+        currentQuestion = questionData.question;
+        currentAnswer = questionData.answer;
+        currentUnit = questionData.unit;
+
+        document.getElementById('question').innerText = currentQuestion;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('result').innerText = '';
+        document.getElementById('notification').innerText = ''; // Clear notification
+    }
+
+    function checkAnswer() {
+        const userAnswer = parseFloat(document.getElementById('answerInput').value);
+        let result;
+        if (Math.abs(userAnswer - currentAnswer) < 0.01) {
+            result = `Correct! Answer: ${currentAnswer} ${currentUnit}`;
+            totalCorrect++;
+        } else {
+            result = `Incorrect. The correct answer is ${currentAnswer} ${currentUnit}.`;
+            totalIncorrect++;
+        }
+
+        history.push({question: currentQuestion, userAnswer, result, type: document.querySelector('input[name="questionType"]:checked').value});
+        document.getElementById('result').innerText = result;
+        document.getElementById('notification').innerText = 'Answer must be submitted before moving to the next question.';
+    }
+
+    function saveHistory() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const studentName = document.getElementById('studentName').value;
+        const studentNumber = document.getElementById('studentNumber').value;
+        const fileName = `${studentName}_${studentNumber}_Ohm's & Watt's Law Questions.pdf`;
+
+        doc.setFontSize(12);
+        doc.text(`Student Name: ${studentName}`, 10, 10);
+        doc.text(`Student Number: ${studentNumber}`, 10, 20);
+
+        // Add summary
+        const totalQuestions = history.length;
+        const ohmsCorrect = history.filter(entry => entry.type === "Ohm's Law" && entry.result.includes('Correct')).length;
+        const wattsCorrect = history.filter(entry => entry.type === "Watts Law" && entry.result.includes('Correct')).length;
+
+        doc.text(`Total Questions Answered: ${totalQuestions}`, 10, 30);
+        doc.text(`Total Correct: ${totalCorrect}`, 10, 40);
+        doc.text(`Total Ohm's Law Correct: ${ohmsCorrect}`, 10, 50);
+        doc.text(`Total Watts Law Correct: ${wattsCorrect}`, 10, 60);
+
+        let y = 70;
+        history.forEach((entry, index) => {
+            doc.text(`${index + 1}. Question: ${entry.question}`, 10, y, { maxWidth: 180 });
+            y += 10;
+            doc.text(`Your Answer: ${entry.userAnswer}`, 10, y, { maxWidth: 180 });
+            y += 10;
+            doc.text(`Result: ${entry.result}`, 10, y, { maxWidth: 180 });
+            y += 20;
+            if (y > 280) {
+                doc.addPage();
+                y = 10;
+            }
+        });
+
+        doc.save(fileName);
+    }
+
+    function confirmResetHistory() {
+        if (confirm('Are you sure you want to reset the history?')) {
+            resetHistory();
+        }
+    }
+
+    function resetHistory() {
+        history = [];
+        totalCorrect = 0;
+        totalIncorrect = 0;
+        document.getElementById('result').innerText = '';
+        document.getElementById('notification').innerText = ''; // Clear notification
+        alert('History has been reset.');
+    }
+
+    function toggleCalculator() {
+        const calculator = document.getElementById('calculator');
+        calculator.classList.toggle('hidden');
+    }
+
+    function addToExpression(value) {
+        const display = document.getElementById('calcDisplay');
+        display.value += value;
+    }
+
+    function calculate() {
+        const display = document.getElementById('calcDisplay');
+        try {
+            display.value = eval(display.value);
+            document.getElementById('calcResult').innerText = `Result: ${display.value}`;
+        } catch (e) {
+            document.getElementById('calcResult').innerText = 'Error';
+        }
+    }
+
+    function clearExpression() {
+        document.getElementById('calcDisplay').value = '';
+        document.getElementById('calcResult').innerText = '';
+    }
+</script>
+</body>
+</html>
