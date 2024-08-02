@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistor Reading Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .resistor-container {
+            margin: 20px 0;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resistor Reading Practice</h1>
+    <div class="flex-row">
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName">
+        <label for="studentNumber" style="margin-left: 20px;">Student Number:</label>
+        <input type="text" id="studentNumber">
+    </div>
+    <div>
+        <label><input type="radio" name="resistorType" value="random" checked> Random</label>
+        <label><input type="radio" name="resistorType" value="4"> 4 Band</label>
+        <label><input type="radio" name="resistorType" value="5"> 5 Band</label>
+    </div>
+    <div class="resistor-container">
+        <canvas id="resistorCanvas" width="400" height="200"></canvas>
+    </div>
+    <div>
+        <label for="guess">Enter resistance value (ohms):</label>
+        <input type="text" id="guess">
+    </div>
+    <div class="button-group">
+        <button id="submitBtn" onclick="checkGuess()">Submit</button>
+        <button id="nextBtn" class="disabled" onclick="loadNewResistor()">Next Question</button>
+    </div>
+    <div class="button-group">
+        <button id="saveBtn" onclick="saveHistoryToPDF()">Save History to PDF</button>
+        <button id="resetBtn" onclick="resetHistory()">Reset History</button>
+    </div>
+    <div class="result" id="result"></div>
+
+    <script>
+        const colorBands = [
+            { color: 'black', value: 0 },
+            { color: 'brown', value: 1 },
+            { color: 'red', value: 2 },
+            { color: 'orange', value: 3 },
+            { color: 'yellow', value: 4 },
+            { color: 'green', value: 5 },
+            { color: 'blue', value: 6 },
+            { color: 'violet', value: 7 },
+            { color: 'gray', value: 8 },
+            { color: 'white', value: 9 }
+        ];
+
+        const toleranceBands = [
+            { color: 'gold', value: -1 },  // Represents a multiplier of 0.1
+            { color: 'silver', value: -2 } // Represents a multiplier of 0.01
+        ];
+
+        let currentResistorValue = 0;
+        let submittedQuestions = 0;
+        let history = [];
+
+        function getRandomColorBand() {
+            return colorBands[Math.floor(Math.random() * colorBands.length)];
+        }
+
+        function getRandomToleranceBand() {
+            return toleranceBands[Math.floor(Math.random() * toleranceBands.length)];
+        }
+
+        function generateResistorValue(bands) {
+            let value = 0;
+            for (let i = 0; i < bands.length - 1; i++) {
+                value = value * 10 + bands[i].value;
+            }
+            value *= Math.pow(10, bands[bands.length - 1].value);
+            if (value > 2000000) {
+                return generateResistorValue(bands);
+            }
+            return value;
+        }
+
+        function drawResistor(bands) {
+            const canvas = document.getElementById('resistorCanvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'lightgray';
+            ctx.fillRect(50, 80, 300, 80);
+
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(0, 110, 50, 10);
+            ctx.fillRect(350, 110, 50, 10);
+
+            const bandWidth = 20;
+            const startX = 80;
+            const bandSpacing = 40;
+            bands.forEach((band, index) => {
+                ctx.fillStyle = band.color;
+                const position = startX + index * (bandWidth + bandSpacing) + (index === bands.length - 1 ? bandWidth / 2 : 0);
+                ctx.fillRect(position, 80, bandWidth, 80);
+            });
+        }
+
+        function loadNewResistor() {
+            const selectedType = document.querySelector('input[name="resistorType"]:checked').value;
+            const bandCount = selectedType === '4' ? 3 : selectedType === '5' ? 4 : Math.random() > 0.5 ? 3 : 4;
+            const bands = [];
+
+            for (let i = 0; i < bandCount; i++) {
+                bands.push(getRandomColorBand());
+            }
+
+            bands.push(getRandomToleranceBand());
+
+            currentResistorValue = generateResistorValue(bands);
+
+            drawResistor(bands);
+
+            document.getElementById('nextBtn').classList.add('disabled');
+            document.getElementById('result').textContent = '';
+            document.getElementById('guess').value = '';
+            document.getElementById('submitBtn').classList.remove('disabled');
+        }
+
+        function checkGuess() {
+            const userGuess = parseInt(document.getElementById('guess').value, 10);
+            const resultDiv = document.getElementById('result');
+            if (userGuess === currentResistorValue) {
+                resultDiv.textContent = "Correct!";
+                resultDiv.style.color = "green";
+            } else {
+                resultDiv.textContent = `Incorrect. The correct value is ${currentResistorValue} ohms.`;
+                resultDiv.style.color = "red";
+            }
+
+            submittedQuestions++;
+            history.push({ guess: userGuess, actual: currentResistorValue });
+
+            document.getElementById('nextBtn').classList.remove('disabled');
+            document.getElementById('submitBtn').classList.add('disabled');
+            resultDiv.textContent += ` Questions submitted: ${submittedQuestions}`;
+        }
+
+        function saveHistoryToPDF() {
+            const studentName = document.getElementById('studentName').value;
+            const studentNumber = document.getElementById('studentNumber').value;
+            const fileName = `${studentName}_${studentNumber}_Resistor_Value_Calculations.pdf`;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(`Student Name: ${studentName}`, 10, 10);
+            doc.text(`Student Number: ${studentNumber}`, 10, 20);
+            doc.text('Question History:', 10, 30);
+
+            history.forEach((item, index) => {
+                doc.text(`Q${index + 1}: Your Guess: ${item.guess} ohms, Actual: ${item.actual} ohms`, 10, 40 + index * 10);
+            });
+
+            doc.save(fileName);
+        }
+
+        function resetHistory() {
+            if (confirm('Are you sure you want to reset the question history?')) {
+                submittedQuestions = 0;
+                history = [];
+                document.getElementById('result').textContent = '';
+                document.getElementById('nextBtn').classList.add('disabled');
+            }
+        }
+
+        window.onload = loadNewResistor;
+
+        document.querySelectorAll('input[name="resistorType"]').forEach((radio) => {
+            radio.addEventListener('change', loadNewResistor);
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</body>
+</html>

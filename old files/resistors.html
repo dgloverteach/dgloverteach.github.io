@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistor Reading Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .resistor-container {
+            margin: 20px 0;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resistor Reading Practice</h1>
+    <div>
+        <label><input type="radio" name="resistorType" value="random" checked> Random</label>
+        <label><input type="radio" name="resistorType" value="4"> 4 Band</label>
+        <label><input type="radio" name="resistorType" value="5"> 5 Band</label>
+    </div>
+    <div class="resistor-container">
+        <canvas id="resistorCanvas" width="400" height="100"></canvas>
+    </div>
+    <div>
+        <label for="guess">Enter resistance value (ohms):</label>
+        <input type="text" id="guess">
+    </div>
+    <button onclick="checkGuess()">Check Answer</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        const colorBands = [
+            { color: 'black', value: 0 },
+            { color: 'brown', value: 1 },
+            { color: 'red', value: 2 },
+            { color: 'orange', value: 3 },
+            { color: 'yellow', value: 4 },
+            { color: 'green', value: 5 },
+            { color: 'blue', value: 6 },
+            { color: 'violet', value: 7 },
+            { color: 'gray', value: 8 },
+            { color: 'white', value: 9 }
+        ];
+
+        let currentResistorValue = 0;
+
+        function getRandomColorBand() {
+            return colorBands[Math.floor(Math.random() * colorBands.length)];
+        }
+
+        function generateResistorValue(bands) {
+            let value = 0;
+            for (let i = 0; i < bands.length - 1; i++) {
+                value = value * 10 + bands[i].value;
+            }
+            value *= Math.pow(10, bands[bands.length - 1].value);
+            return value;
+        }
+
+        function drawResistor(bands) {
+            const canvas = document.getElementById('resistorCanvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw resistor body
+            ctx.fillStyle = 'lightgray';
+            ctx.fillRect(50, 30, 300, 40);
+
+            // Draw resistor leads
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(0, 45, 50, 10);
+            ctx.fillRect(350, 45, 50, 10);
+
+            // Draw color bands
+            const bandWidth = 20;
+            const startX = 70;
+            bands.forEach((band, index) => {
+                ctx.fillStyle = band.color;
+                ctx.fillRect(startX + index * bandWidth, 30, bandWidth, 40);
+            });
+        }
+
+        function loadNewResistor() {
+            const selectedType = document.querySelector('input[name="resistorType"]:checked').value;
+            const bandCount = selectedType === '4' ? 4 : selectedType === '5' ? 5 : Math.random() > 0.5 ? 4 : 5;
+            const bands = [];
+
+            for (let i = 0; i < bandCount; i++) {
+                bands.push(getRandomColorBand());
+            }
+
+            currentResistorValue = generateResistorValue(bands);
+
+            drawResistor(bands);
+        }
+
+        function checkGuess() {
+            const userGuess = parseInt(document.getElementById('guess').value, 10);
+            const resultDiv = document.getElementById('result');
+            if (userGuess === currentResistorValue) {
+                resultDiv.textContent = "Correct!";
+                resultDiv.style.color = "green";
+            } else {
+                resultDiv.textContent = `Incorrect. The correct value is ${currentResistorValue} ohms.`;
+                resultDiv.style.color = "red";
+            }
+        }
+
+        // Initial load
+        window.onload = loadNewResistor;
+
+        // Change resistor image when the type selection changes
+        document.querySelectorAll('input[name="resistorType"]').forEach((radio) => {
+            radio.addEventListener('change', loadNewResistor);
+        });
+    </script>
+</body>
+</html>
