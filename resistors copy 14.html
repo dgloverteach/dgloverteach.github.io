@@ -55,17 +55,25 @@
             font-size: 14px;
             font-weight: bold;
             color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .color-label::before {
+            content: "↑";
+            font-size: 18px;
+            color: black;
         }
     </style>
 </head>
 <body>
     <h1>Resistor Reading Practice</h1>
-    <h5> <p style="color: red">If image does not load for 1st question click browser refresh button.</h5>
+    <h5><p style="color: red">If image does not load for 1st question click browser refresh button.</h5>
     <div class="flex-row">
         <label for="studentName">Student Name:</label>
-        <input type="text" id="studentName">
+        <input type="text" id="studentName" aria-label="Student Name">
         <label for="studentNumber" style="margin-left: 20px;">Student Number:</label>
-        <input type="text" id="studentNumber">
+        <input type="text" id="studentNumber" aria-label="Student Number">
     </div>
     <div>
         <label><input type="radio" name="resistorType" value="random" checked> Random</label>
@@ -73,38 +81,38 @@
         <label><input type="radio" name="resistorType" value="5"> 5 Band</label>
     </div>
     <div class="resistor-container">
-        <canvas id="resistorCanvas" width="400" height="200"></canvas>
-        <div id="colorLabels" class="hidden"></div>
+        <canvas id="resistorCanvas" width="400" height="200" aria-label="Resistor"></canvas>
+        <div id="colorLabels"></div>
     </div>
     <div>
         <label for="guess">Enter resistance value (ohms):</label>
-        <input type="text" id="guess">
+        <input type="text" id="guess" aria-label="Enter resistance value">
     </div>
     <div>
         <label for="toleranceGuess">Enter tolerance value (%):</label>
-        <input type="text" id="toleranceGuess">
+        <input type="text" id="toleranceGuess" aria-label="Enter tolerance value">
     </div>
     <div>
         <label for="actualResistance">Enter actual resistance value for tolerance (ohms):</label>
-        <input type="text" id="actualResistance">
+        <input type="text" id="actualResistance" aria-label="Enter actual resistance value for tolerance">
     </div>
     <div class="button-group">
-        <button id="submitBtn" onclick="checkGuess()">Submit</button>
-        <button id="nextBtn" class="disabled" onclick="loadNewResistor()">Next Question</button>
+        <button id="submitBtn" onclick="checkGuess()" aria-label="Submit">Submit</button>
+        <button id="nextBtn" class="disabled" onclick="loadNewResistor()" aria-label="Next Question">Next Question</button>
     </div>
     <div class="button-group">
-        <button id="saveBtn" onclick="saveHistoryToPDF()">Save History to PDF</button>
-        <button id="resetBtn" onclick="resetHistory()">Reset History</button>
+        <button id="saveBtn" onclick="saveHistoryToPDF()" aria-label="Save History to PDF">Save History to PDF</button>
+        <button id="resetBtn" onclick="resetHistory()" aria-label="Reset History">Reset History</button>
     </div>
-    <div class="result" id="result"></div>
-    <div class="result" id="submittedCount">Total Questions Submitted: 0</div>
+    <div class="result" id="result" aria-live="polite"></div>
+    <div class="result" id="submittedCount" aria-live="polite">Total Questions Submitted: 0</div>
     <div>
-        <label><input type="radio" name="showLabels" id="showLabels"> Show color labels</label>
+        <label><input type="checkbox" name="showLabels" id="showLabels" checked onchange="toggleLabels()"> Show color labels</label>
     </div>
 
-    <button onclick="toggleCalculator()">Toggle Calculator</button>
+    <button onclick="toggleCalculator()" aria-label="Toggle Calculator">Toggle Calculator</button>
     <div id="calculator" class="hidden">
-        <input type="text" id="calcDisplay" disabled>
+        <input type="text" id="calcDisplay" disabled aria-label="Calculator Display">
         <div class="calculator">
             <button onclick="addToExpression('1')">1</button>
             <button onclick="addToExpression('2')">2</button>
@@ -124,7 +132,7 @@
             <button onclick="addToExpression('+')">+</button>
             <button onclick="clearExpression()">C</button>
         </div>
-        <div id="calcResult" class="result"></div>
+        <div id="calcResult" class="result" aria-live="polite"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -221,8 +229,8 @@
                 if (showLabels) {
                     const label = document.createElement('div');
                     label.className = 'color-label';
-                    label.style.left = `${position + 10}px`;
-                    label.style.top = '150px';
+                    label.style.left = `${position - 10}px`;
+                    label.style.top = '50px';
                     label.innerText = band.color;
                     colorLabels.appendChild(label);
                 }
@@ -269,7 +277,7 @@
             const actualResistance = document.getElementById('actualResistance').value;
 
             return !isNaN(guess) && !isNaN(toleranceGuess) && !isNaN(actualResistance);
-       }
+        }
 
         function checkGuess() {
             const guess = parseFloat(document.getElementById('guess').value);
@@ -282,7 +290,7 @@
             }
 
             const tolerance = currentResistorValue * (currentToleranceValue / 100);
-            const toleranceValue = currentToleranceValue ;
+            const toleranceValue = currentToleranceValue;
 
             let correct = true;
             let resultMessage = '';
@@ -343,11 +351,12 @@
             doc.text(`Total Correct: ${totalCorrect}`, 10, 40);
 
             history.forEach((item, index) => {
-                doc.text(`Question ${index + 1}:`, 10, 50 + (index * 20));
-                doc.text(`  Resistance Guess: ${item.guess} ohms`, 10, 60 + (index * 20));
-                doc.text(`  Tolerance Guess: ${item.toleranceGuess}%`, 10, 70 + (index * 20));
-                doc.text(`  Actual Resistance for Tolerance: ${item.actualResistance} ohms`, 10, 80 + (index * 20));
-                doc.text(`  Correct: ${item.correct ? 'Yes' : 'No'}`, 10, 90 + (index * 20));
+                const yOffset = 50 + (index * 30);
+                doc.text(`Question ${index + 1}:`, 10, yOffset);
+                doc.text(`  Resistance Guess: ${item.guess} ohms`, 10, yOffset + 10);
+                doc.text(`  Tolerance Guess: ${item.toleranceGuess}%`, 10, yOffset + 20);
+                doc.text(`  Actual Resistance for Tolerance: ${item.actualResistance} ohms`, 10, yOffset + 30);
+                doc.text(`  Correct: ${item.correct ? 'Yes' : 'No'}`, 10, yOffset + 40);
             });
 
             doc.save(`${name}_${number}_Resistor_Reading_Worksheet.pdf`);
@@ -364,6 +373,11 @@
                 document.getElementById('result').innerHTML = '';
                 document.getElementById('submittedCount').innerText = `Total Questions Submitted: 0`;
             }
+        }
+
+        function toggleLabels() {
+            const showLabels = document.getElementById('showLabels').checked;
+            drawResistor(currentBands);
         }
 
         function toggleCalculator() {
