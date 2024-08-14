@@ -7,7 +7,7 @@
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
             z-index: 1; /* Sit on top */
-            padding-top: 80px; /* Location of the box */
+            padding-top: 100px; /* Location of the box */
             left: 0;
             top: 0;
             width: 100%; /* Full width */
@@ -24,14 +24,14 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            font-family: Courier;
+            font-family: Arial, sans-serif;
         }
 
         /* Close button */
         .close {
             color: #aaa;
             float: right;
-            font-size: 35px;
+            font-size: 28px;
             font-weight: bold;
         }
 
@@ -41,11 +41,26 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        /* Table style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
 
-<h2>Modal Example</h2>
+<h2>Instructions Example</h2>
 
 <!-- Trigger button -->
 <button id="myBtn">Open Instructions</button>
@@ -63,8 +78,9 @@
     <p>2. <strong>First and Second Bands</strong>: These represent the first and second significant digits of the resistor value.</p>
     <p>3. <strong>Third Band</strong>: This represents the multiplier (the number of zeros to add).</p>
     <p>4. <strong>Fourth Band</strong>: This represents the tolerance (the accuracy of the resistor value).</p>
+    
     <h3>Color Code Table</h3>
-    <table border="1">
+    <table>
         <tr>
             <th>Color</th>
             <th>Digit</th>
@@ -144,6 +160,7 @@
             <td>±10%</td>
         </tr>
     </table>
+
     <h3>Example:</h3>
     <p>For a resistor with bands: Red, Red, Brown, Gold:</p>
     <ul>
@@ -176,14 +193,7 @@
         <li><strong>4-Band Resistors</strong>: First two bands for significant digits, third for multiplier, fourth for tolerance.</li>
         <li><strong>5-Band Resistors</strong>: First three bands for significant digits, fourth for multiplier, fifth for tolerance.</li>
     </ul>
-    <p>A D.Glover program </p>
-
-    <p></p>
-    <p></p>
-    <p></p>
-    <p>.</p>
-    <p>.</p>
-
+    <p>A D.Glover program</p>
   </div>
 
 </div>

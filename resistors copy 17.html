@@ -69,12 +69,12 @@
 </head>
 <body>   
     <h1> Resistor Reading Practice </h1> 
-    <button onclick="showInstructions()">Show Instructions</button>  
+    <button onclick="showInstructions()">How to Read a Resistor</button>  
     <h5><p style="color: red">If image does not load for 1st question click browser refresh button. <br>
                             If using a phone it should be held in landscape mode. </h5>
     <div class="flex-row">
         <label for="studentName">Student Name:</label>
-        <input type="text" id="studentName" placeholder="1st & Last Name" aria-label="Student Name">
+        <input type="text" id="studentName" placeholder="First & Last Name" aria-label="Student Name">
         <label for="studentNumber" style="margin-left: 20px;">Student Number:</label>
         <input type="text" id="studentNumber" placeholder="FULL Student #" aria-label="Student Number">
     </div>
@@ -186,86 +186,84 @@
         let history = [];
         let currentBands = [];
 
-        document.addEventListener('DOMContentLoaded', () => {
-        showInstructions();
-        nextQuestion();
-         });
+// The following three lines make the showInstructions (How to Read a Resistor) window show up automoatically
+
+//        document.addEventListener('DOMContentLoaded', () => {
+//        showInstructions();
+//        nextQuestion();
+//         });
+
 
           function showInstructions() {
               alert("Instructions - READ CAREFULLY!!\n\n" +
 
-              Reading the color bands on resistors helps you determine their resistance value and tolerance. Here’s how you can read both 4-band and 5-band resistors:
+              
+              'Reading the color bands on resistors helps you determine their resistance value and tolerance. Here’s how you can read both 4-band and 5-band resistors:\n\n' +
 
-### 4-Band Resistors
+'4-Band Resistors\n' +
 
-1. **Identify the Bands**: A 4-band resistor has four colored bands. These bands are read from left to right (with the tolerance band usually on the far right).
+'1. **Identify the Bands**: A 4-band resistor has four colored bands. These bands are read from left to right (with the tolerance band usually on the far right).\n' +
 
-2. **First and Second Bands**: These represent the first and second significant digits of the resistor value.
+'2. **First and Second Bands**: These represent the first and second significant digits of the resistor value.\n' +
 
-3. **Third Band**: This represents the multiplier (the number of zeros to add).
+'3. **Third Band**: This represents the multiplier (the number of zeros to add).\n' +
 
-4. **Fourth Band**: This represents the tolerance (the accuracy of the resistor value).
+'4. **Fourth Band**: This represents the tolerance (the accuracy of the resistor value).\n\n' +
 
-#### Color Code Table
+//<p style='font-family: Courier'>
+'Color Code Table\n\n' +
 
-| Color      | Digit | Multiplier       | Tolerance |
-|------------|-------|------------------|-----------|
-| Black      | 0     | ×1               | -         |
-| Brown      | 1     | ×10              | ±1%       |
-| Red        | 2     | ×100             | ±2%       |
-| Orange     | 3     | ×1,000           | -         |
-| Yellow     | 4     | ×10,000          | -         |
-| Green      | 5     | ×100,000         | ±0.5%     |
-| Blue       | 6     | ×1,000,000       | ±0.25%    |
-| Violet     | 7     | ×10,000,000      | ±0.1%     |
-| Gray       | 8     | ×100,000,000     | ±0.05%    |
-| White      | 9     | ×1,000,000,000   | -         |
-| Gold       | -     | ×0.1             | ±5%       |
-| Silver     | -     | ×0.01            | ±10%      |
+'| Color      | Digit | Multiplier       | Tolerance |\n' +
+'|------------|-------|------------------|-----------|\n' +
+'| Black      | 0     | ×1               | -         |\n' +
+'| Brown      | 1     | ×10              | ±1%       |\n' +
+'| Red        | 2     | ×100             | ±2%       |\n' +
+'| Orange     | 3     | ×1,000           | -         |\n' +
+'| Yellow     | 4     | ×10,000          | -         |\n' +
+'| Green      | 5     | ×100,000         | ±0.5%     |\n' +
+'| Blue       | 6     | ×1,000,000       | ±0.25%    |\n' +
+'| Violet     | 7     | ×10,000,000      | ±0.1%     |\n' +
+'| Gray       | 8     | ×100,000,000     | ±0.05%    |\n' +
+'| White      | 9     | ×1,000,000,000   | -         |\n' +
+'| Gold       | -     | ×0.1             | ±5%       |\n' +
+'| Silver     | -     | ×0.01            | ±10%      |\n\n' +
 
-#### Example:
-For a resistor with bands: Red, Red, Brown, Gold:
-- **Red**: 2
-- **Red**: 2
-- **Brown**: ×10
-- **Gold**: ±5% tolerance
+//</p>
 
-The resistor value is: \(22 \times 10 = 220\) ohms with a ±5% tolerance.
+'Example:\n' +
+'For a resistor with bands: Red, Red, Brown, Gold:\n' +
+'- **Red**: 2\n' +
+'- **Red**: 2\n' +
+'- **Brown**: ×10\n' +
+'- **Gold**: ±5% tolerance\n\n' +
 
-### 5-Band Resistors
+'The resistor value is: \(22 \times 10 = 220\) ohms with a ±5% tolerance.\n\n' +
 
-1. **Identify the Bands**: A 5-band resistor has five colored bands. These bands are read from left to right.
+'5-Band Resistors \n' +
 
-2. **First Three Bands**: These represent the first three significant digits of the resistor value.
+'1. **Identify the Bands**: A 5-band resistor has five colored bands. These bands are read from left to right.\n' +
 
-3. **Fourth Band**: This represents the multiplier.
+'2. **First Three Bands**: These represent the first three significant digits of the resistor value.\n' +
 
-4. **Fifth Band**: This represents the tolerance.
+'3. **Fourth Band**: This represents the multiplier.\n' +
 
-#### Example:
-For a resistor with bands: Brown, Black, Red, Orange, Brown:
-- **Brown**: 1
-- **Black**: 0
-- **Red**: 2
-- **Orange**: ×1,000
-- **Brown**: ±1% tolerance
+'4. **Fifth Band**: This represents the tolerance.\n\n' +
 
-The resistor value is: \(102 \times 1,000 = 102,000\) ohms or 102 kΩ with a ±1% tolerance.
+'Example: \n' +
+'For a resistor with bands: Brown, Black, Red, Orange, Brown: \n' +
+'- **Brown**: 1 \n' +
+'- **Black**: 0 \n' +
+'- **Red**: 2 \n' +
+'- **Orange**: ×1,000 \n' +
+'- **Brown**: ±1% tolerance \n\n' +
 
-### Summary
+"The resistor value is: \(102 \times 1,000 = 102,000\) ohms or 102 kΩ with a ±1% tolerance. \n\n" +
 
-- **4-Band Resistors**: First two bands for significant digits, third for multiplier, fourth for tolerance.
-- **5-Band Resistors**: First three bands for significant digits, fourth for multiplier, fifth for tolerance.
+" Summary .\n\n" +
 
+"- **4-Band Resistors**: First two bands for significant digits, third for multiplier, fourth for tolerance. \n" +
+"- **5-Band Resistors**: First three bands for significant digits, fourth for multiplier, fifth for tolerance. \n\n" +
 
-
-              "1. Enter your Name and Student Number.\n" +
-              "2. Select the type of question - 'Random' is selected by default (Ohm's Law or Watts Law).\n" +
-              "3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.\n" +
-              "4. Your answer will be checked, and you can see your results.\n" +
-              "5. Click 'Next Question' to move on after submitting your answer.\n" +
-              "6. Save your question history as a PDF when needed. Pay attention to where you save it.\n" +
-              "7. Use the calculator for any calculations.\n\n" +
               "A D.Glover program");
     }
 
