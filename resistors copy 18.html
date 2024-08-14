@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistor Reading Practice</title>
+    <style>
+        /* Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+        .resistor-container {
+            margin: 10px 0;
+            position: relative;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            gap: 5px;
+        }
+        .calculator button {
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+        }
+        #calculator {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .color-label {
+            position: absolute;
+            font-size: 15px;
+            font-weight: bold;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px 0;
+        }
+        .color-label::before {
+            content: "↑";
+            font-size: 18px;
+            color: black;  
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1;
+            padding-top: 80px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            font-family: Courier;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1> Resistor Reading Practice </h1>
+    <button id="myBtn">How to Read a Resistor</button>
+
+    <!-- Modal HTML -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Instructions - READ CAREFULLY!!</h2>
+        <p>Reading the color bands on resistors helps you determine their resistance value and tolerance. Here’s how you can read both 4-band and 5-band resistors:</p>
+        <h3>4-Band Resistors</h3>
+        <p>1. <strong>Identify the Bands</strong>: A 4-band resistor has four colored bands. These bands are read from left to right (with the tolerance band usually on the far right).</p>
+        <p>2. <strong>First and Second Bands</strong>: These represent the first and second significant digits of the resistor value.</p>
+        <p>3. <strong>Third Band</strong>: This represents the multiplier (the number of zeros to add).</p>
+        <p>4. <strong>Fourth Band</strong>: This represents the tolerance (the accuracy of the resistor value).</p>
+        <h3>Color Code Table</h3>
+        <table border="1">
+            <tr>
+                <th>Color</th>
+                <th>Digit</th>
+                <th>Multiplier</th>
+                <th>Tolerance</th>
+            </tr>
+            <tr>
+                <td>Black</td>
+                <td>0</td>
+                <td>×1</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>Brown</td>
+                <td>1</td>
+                <td>×10</td>
+                <td>±1%</            </tr>
+            <tr>
+                <td>Red</td>
+                <td>2</td>
+                <td>×100</td>
+                <td>±2%</td>
+            </tr>
+            <tr>
+                <td>Orange</td>
+                <td>3</td>
+                <td>×1,000</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>Yellow</td>
+                <td>4</td>
+                <td>×10,000</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>Green</td>
+                <td>5</td>
+                <td>×100,000</td>
+                <td>±0.5%</td>
+            </tr>
+            <tr>
+                <td>Blue</td>
+                <td>6</td>
+                <td>×1,000,000</td>
+                <td>±0.25%</td>
+            </tr>
+            <tr>
+                <td>Violet</td>
+                <td>7</td>
+                <td>×10,000,000</td>
+                <td>±0.1%</td>
+            </tr>
+            <tr>
+                <td>Gray</td>
+                <td>8</td>
+                <td>×100,000,000</td>
+                <td>±0.05%</td>
+            </tr>
+            <tr>
+                <td>White</td>
+                <td>9</td>
+                <td>×1,000,000,000</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>Gold</td>
+                <td>-</td>
+                <td>×0.1</td>
+                <td>±5%</td>
+            </tr>
+            <tr>
+                <td>Silver</td>
+                <td>-</td>
+                <td>×0.01</td>
+                <td>±10%</td>
+            </tr>
+        </table>
+        <h3>Example:</h3>
+        <p>For a resistor with bands: Red, Red, Brown, Gold:</p>
+        <ul>
+            <li><strong>Red</strong>: 2</li>
+            <li><strong>Red</strong>: 2</li>
+            <li><strong>Brown</strong>: ×10</li>
+            <li><strong>Gold</strong>: ±5% tolerance</li>
+        </ul>
+        <p>The resistor value is: \(22 \times 10 = 220\) ohms with a ±5% tolerance.</p>
+
+        <h3>5-Band Resistors</h3>
+        <p>1. <strong>Identify the Bands</strong>: A 5-band resistor has five colored bands. These bands are read from left to right.</p>
+        <p>2. <strong>First Three Bands</strong>: These represent the first three significant digits of the resistor value.</p>
+        <p>3. <strong>Fourth Band</strong>: This represents the multiplier.</p>
+        <p>4. <strong>Fifth Band</strong>: This represents the tolerance.</p>
+        
+        <h3>Example:</h3>
+        <p>For a resistor with bands: Brown, Black, Red, Orange, Brown:</p>
+        <ul>
+            <li><strong>Brown</strong>: 1</li>
+            <li><strong>Black</strong>: 0</li>
+            <li><strong>Red</strong>: 2</li>
+            <li><strong>Orange</strong>: ×1,000</li>
+            <li><strong>Brown</strong>: ±1% tolerance</li>
+        </ul>
+        <p>The resistor value is: \(102 \times 1,000 = 102,000\) ohms or 102 kΩ with a ±1% tolerance.</p>
+
+        <h3>Summary</h3>
+        <ul>
+            <li><strong>4-Band Resistors</strong>: First two bands for significant digits, third for multiplier, fourth for tolerance.</li>
+            <li><strong>5-Band Resistors</strong>: First three bands for significant digits, fourth for multiplier, fifth for tolerance.</li>
+        </ul>
+        <p>A D.Glover program </p>
+      </div>
+    </div>
+
+    <h5><p style="color: red">If image does not load for 1st question click browser refresh button. <br>
+                            If using a phone it should be held in landscape mode. </h5>
+    <div class="flex-row">
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" placeholder="First & Last Name" aria-label="Student Name">
+        <label for="studentNumber" style="margin-left: 20px;">Student Number:</label>
+        <input type="text" id="studentNumber" placeholder="FULL Student #" aria-label="Student Number">
+    </div>
+    <div>
+        <label><input type="radio" name="resistorType" value="random" checked> Random</label>
+        <label><input type="radio" name="resistorType" value="4"> 4 Band</label>
+        <label><input type="radio" name="resistorType" value="5"> 5 Band</label>
+    </div>
+    <div>
+        <label><input type="checkbox" name="showLabels" id="showLabels" checked onchange="toggleLabels()"> Show/Hide color labels</label>
+    </div>
+    <div class="resistor-container">
+        <canvas id="resistorCanvas" width="400" height="200" aria-label="Resistor"></canvas>
+        <div id="colorLabels" style="top: 150px;"></div>
+    </div>
+    <div>
+        <label for="answer">Enter resistance value (ohms):</label>
+        <input type="text" id="answer" aria-label="Enter resistance value">
+    </div>
+    <div>
+        <label for="toleranceAnswer">Enter tolerance value (%):</label>
+        <input type="text" id="toleranceAnswer" aria-label="Enter tolerance value">
+    </div>
+    <div>
+        <label for="actualResistance">Enter actual resistance value for tolerance (ohms):</label>
+        <input type="text" id="actualResistance" aria-label="Enter actual resistance value for tolerance">
+    </div>
+    <div class="button-group">
+        <button id="submitBtn" onclick="checkAnswer()" aria-label="Submit">Submit</button>
+        <button id="nextBtn" class="disabled" onclick="loadNewResistor()" aria-label="Next Question">Next Question</button>
+    </div>
+    <div class="button-group">
+        <button id="saveBtn" onclick="saveHistoryToPDF()" aria-label="Save History to PDF">Save History to PDF</button>
+        <button id="resetBtn" onclick="resetHistory()" aria-label="Reset History">Reset History</button>
+    </div>
+    <div class="result" id="result" aria-live="polite"></div>
+    <div class="result" id="submittedCount" aria-live="polite">Total Questions Submitted: 0</div>
+
+    <button onclick="toggleCalculator()" aria-label="Toggle Calculator">Toggle Calculator</button>
+    <div id="calculator" class="hidden">
+        <input type="text" id="calcDisplay" disabled aria-label="Calculator Display">
+        <div class="calculator">
+            <button onclick="addToExpression('1')">1</button>
+            <button onclick="addToExpression('2')">2</button>
+            <button onclick="addToExpression('3')">3</button>
+            <button onclick="addToExpression('/')">÷</button>
+            <button onclick="addToExpression('4')">4</button>
+            <button onclick="addToExpression('5')">5</button>
+            <button onclick="addToExpression('6')">6</button>
+            <button onclick="addToExpression('*')">x</button>
+            <button onclick="addToExpression('7')">7</button>
+            <button onclick="addToExpression('8')">8</button>
+            <button onclick="addToExpression('9')">9</button>
+            <button onclick="addToExpression('-')">-</button>
+            <button onclick="addToExpression('0')">0</button>
+            <button onclick="addToExpression('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="addToExpression('+')">+</button>
+            <button onclick="clearExpression()">C</button>
+        </div>
+        <div id="calcResult" class="result" aria-live="polite"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Modal JavaScript
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("myBtn");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+          modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+
+        const colorBands = [
+            { color: 'black', value: 0 },
+            { color: 'brown', value: 1 },
+            { color: 'red', value: 2 },
+            { color: 'orange', value: 3 },
+            { color: 'yellow', value: 4 },
+            { color: 'green', value: 5 },
+            { color: 'blue', value: 6 },
+            { color: 'violet', value: 7 },
+            { color: 'gray', value: 8 },
+            { color: 'white', value: 9 }
+        ];
+
+        const multiplierBands = [
+            { color: 'black', multiplier: 1 },
+            { color: 'brown', multiplier: 10 },
+            { color: 'red', multiplier: 100 },
+            { color: 'orange', multiplier: 1000 },
+            { color: 'yellow', multiplier: 10000 },
+            { color: 'green', multiplier: 100000 },
+            { color: 'blue', multiplier: 1000000 },
+            { color: 'gold', multiplier: 0.1 },
+            { color: 'silver', multiplier: 0.01 }
+        ];
+
+        const toleranceBands = [
+            { color: 'brown', tolerance: 1 },
+            { color: 'red', tolerance: 2 },
+            { color: 'green', tolerance: 0.5 },
+            { color: 'blue', tolerance: 0.25 },
+            { color: 'violet', tolerance: 0.1 },
+            { color: 'gray', tolerance: 0.05 },
+            { color: 'gold', tolerance: 5 },
+            { color: 'silver', tolerance: 10 }
+        ];
+
+        let currentResistorValue = 0;
+        let currentToleranceValue = 0;
+        let submittedQuestions = 0;
+        let totalCorrect = 0;
+        let total4BandCorrect = 0;
+        let total5BandCorrect = 0;
+        let totalRandomCorrect = 0;
+        let history = [];
+        let currentBands = [];
+
+        function getRandomBand(bandArray) {
+            return bandArray[Math.floor(Math.random() * bandArray.length)];
+        }
+
+        function generateResistorValue(bands, isFourBand) {
+            let value = 0;
+            const multiplierBand = isFourBand ? bands[2] : bands[3];
+            for (let i = 0; i < (isFourBand ? 2 : 3); i++) {
+                value = value * 10 + bands[i].value;
+            }
+            value *= multiplierBand.multiplier;
+            if (value > 2000000) {
+                return generateResistorValue(bands, isFourBand);
+            }
+            return value;
+        }
+
+        function drawResistor(bands) {
+            const canvas = document.getElementById('resistorCanvas');
+            const ctx = canvas.getContext('2d');
+            const colorLabels = document.getElementById('colorLabels');
+            const showLabels = document.getElementById('showLabels').checked;
+
+            currentBands = bands;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            colorLabels.innerHTML = '';
+
+            ctx.fillStyle = 'lightgray';
+            ctx.fillRect(50, 60, 300, 80);
+
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(0, 100, 50, 10);
+            ctx.fillRect(350, 100, 50, 10);
+
+            const bandWidth = 20;
+            const startX = 80;
+            const bandSpacing = 30;
+            bands.forEach((band, index) => {
+                const position = startX + index * (bandWidth + bandSpacing) + (index === bands.length - 1 ? bandWidth / 2 : 0);
+                ctx.fillStyle = band.color;
+                ctx.fillRect(position, 60, bandWidth, 80);
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(position, 60, bandWidth, 80);
+
+                if (showLabels) {
+                    const label = document.createElement('div');
+                    label.className = 'color-label';
+                    label.style.left = `${position - 10}px`;
+                    label.style.top = '160px';
+                    label.innerText = band.color;
+                    colorLabels.appendChild(label);
+                }
+            });
+
+            colorLabels.classList.toggle('hidden', !showLabels);
+        }
+
+        function loadNewResistor() {
+            const selectedType = document.querySelector('input[name="resistorType"]:checked').value;
+            const isFourBand = selectedType === '4' || (selectedType === 'random' && Math.random() > 0.5);
+            const bandCount = isFourBand ? 4 : 5;
+            const bands = [];
+
+            for (let i = 0; i < bandCount - 1; i++) {
+                bands.push(getRandomBand(colorBands));
+            }
+
+            if (isFourBand) {
+                bands[2] = getRandomBand(multiplierBands);
+            } else {
+                bands[3] = getRandomBand(multiplierBands);
+            }
+
+            const toleranceBand = getRandomBand(toleranceBands);
+            bands.push(toleranceBand);
+
+            currentResistorValue = generateResistorValue(bands, isFourBand);
+            currentToleranceValue = bands[bands.length - 1].tolerance; // Assuming tolerance is always the last band
+
+            drawResistor(bands);
+
+            document.getElementById('nextBtn').classList.add('disabled');
+            document.getElementById('result').textContent = '';
+            document.getElementById('answer').value = '';
+            document.getElementById('toleranceAnswer').value = '';
+            document.getElementById('actualResistance').value = '';
+            document.getElementById('submitBtn').classList.remove('disabled');
+        }
+
+        function validateInputs() {
+            const answer = document.getElementById('answer').value;
+            const toleranceAnswer = document.getElementById('toleranceAnswer').value;
+            const actualResistance = document.getElementById('actualResistance').value;
+
+            return !isNaN(answer) && !isNaN(toleranceAnswer) && !isNaN(actualResistance);
+        }
+
+        function checkAnswer() {
+            const answer = parseFloat(document.getElementById('answer').value);
+            const toleranceAnswer = parseFloat(document.getElementById('toleranceAnswer').value);
+            const actualResistance = parseFloat(document.getElementById('actualResistance').value);
+
+            if (isNaN(answer) || isNaN(toleranceAnswer) || isNaN(actualResistance)) {
+                document.getElementById('result').innerHTML = 'Please fill in all fields with valid numbers.';
+                return;
+            }
+
+            const tolerance = currentResistorValue * (currentToleranceValue / 100);
+            const toleranceValue = currentToleranceValue;
+
+            let correct = true;
+            let resultMessage = '';
+
+            if (Math.abs(answer - currentResistorValue) <= tolerance) {
+                resultMessage += `Your answer for the resistance value is correct.<br>`;
+                totalCorrect++;
+            } else {
+                resultMessage += `Your answer for the resistance value is incorrect. The correct value is ${currentResistorValue.toFixed(2)} ohms.<br>`;
+                correct = false;
+            }
+
+            if (Math.abs(toleranceAnswer - toleranceValue) <= 0.01) {
+                resultMessage += `Your answer for the tolerance value is correct.<br>`;
+            } else {
+                resultMessage += `Your answer for the tolerance value is incorrect. The correct tolerance value is ${toleranceValue.toFixed(2)}%<br>`;
+                correct = false;
+            }
+
+            if (Math.abs(actualResistance - ((currentResistorValue * (currentToleranceValue / 100)) * 2)) <= 0.01) {
+                resultMessage += `Your actual resistance value for tolerance is correct.<br>`;
+            } else {
+                resultMessage += `Your actual resistance value for tolerance is incorrect. The correct value is ${((currentResistorValue * (currentToleranceValue / 100)) * 2).toFixed(2)} ohms. Remember that tolerance value is + or - which means that the tolerance value needs to be doubled.<br>`;
+                correct = false;
+            }
+
+            if (correct) {
+                document.getElementById('result').innerHTML = `Well done! ${resultMessage}`;
+                document.getElementById('nextBtn').classList.remove('disabled');
+            } else {
+                document.getElementById('result').innerHTML = `<b> Check your answers: </b> <br>${resultMessage}`;
+                document.getElementById('nextBtn').classList.remove('disabled');
+            }
+
+            submittedQuestions++;
+            document.getElementById('submittedCount').innerText = `Total Questions Submitted: ${submittedQuestions}`;
+
+            const currentQuestion = {
+                answer,
+                toleranceAnswer,
+                actualResistance,
+                correct
+            };
+            history.push(currentQuestion);
+
+            document.getElementById('submitBtn').classList.add('disabled');
+        }
+
+        function saveHistoryToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const name = document.getElementById('studentName').value;
+            const number = document.getElementById('studentNumber').value;
+
+            doc.text(`Name: ${name}`, 10, 10);
+            doc.text(`Student Number: ${number}`, 10, 20);
+            doc.text(`Total Questions Attempted: ${submittedQuestions}`, 10, 30);
+            doc.text(`Total Correct: ${totalCorrect}`, 10, 40);
+
+            history.forEach((item, index) => {
+                const yOffset = 60 + (index * 50);
+                doc.text(`Question ${index + 1}:`, 10, yOffset);
+                doc.text(`  Resistance Answer: ${item.answer} ohms`, 10, yOffset + 10);
+                doc.text(`  Tolerance Answer: ${item.toleranceAnswer}%`, 10, yOffset + 20);
+                doc.text(`  Actual Resistance for Tolerance: ${item.actualResistance} ohms`, 10, yOffset + 30);
+                doc.text(`  Correct: ${item.correct ? 'Yes' : 'No'}`, 10, yOffset + 40);
+            });
+
+            doc.save(`${name}_${number}_Resistor_Reading_Worksheet.pdf`);
+        }
+
+        function resetHistory() {
+            if (confirm('Are you sure you want to reset the history?')) {
+                submittedQuestions = 0;
+                totalCorrect = 0;
+                total4BandCorrect = 0;
+                total5BandCorrect = 0;
+                totalRandomCorrect = 0;
+                history = [];
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('submittedCount').innerText = `Total Questions Submitted: 0`;
+            }
+        }
+
+        function toggleLabels() {
+            drawResistor(currentBands);
+        }
+
+        function toggleCalculator() {
+            const calc = document.getElementById('calculator');
+            calc.classList.toggle('hidden');
+        }
+
+        function addToExpression(value) {
+            document.getElementById('calcDisplay').value += value;
+        }
+
+        function clearExpression() {
+            document.getElementById('calcDisplay').value = '';
+        }
+
+        function calculate() {
+            try {
+                const result = eval(document.getElementById('calcDisplay').value);
+                document.getElementById('calcResult').innerText = result;
+            } catch (e) {
+                document.getElementById('calcResult').innerText = 'Error';
+            }
+        }
+
+        // Initialize the first resistor
+        loadNewResistor();
+    </script>
+</body>
+</html>
