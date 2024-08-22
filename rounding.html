@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rounding Numbers Question Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 48px);
+            gap: 10px;
+        }
+        .calculator button {
+            width: 48px;
+            height: 48px;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #notification {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Rounding Numbers Question Generator</h1>
+    <button onclick="showInstructions()">Show Instructions</button>
+
+    <div>
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" placeholder="Enter your name">
+
+        <label for="studentNumber">Student Number:</label>
+        <input type="text" id="studentNumber" placeholder="Enter your student number">
+    </div>
+
+    <div>
+        <label>
+            <input type="radio" name="questionType" value="Random" checked>
+            Random
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Nearest Whole Number">
+            Nearest Whole Number
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Decimal Places">
+            Decimal Places
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Significant Figures">
+            Significant Figures
+        </label>
+    </div>
+
+    <div id="questionContainer">
+        <h2 id="question"></h2>
+        <input type="text" id="answerInput" placeholder="Enter your answer">
+        <button onclick="checkAnswer()">Submit</button>
+        <button id="nextQuestionBtn" onclick="nextQuestion()" disabled>Next Question</button>
+    </div>
+
+    <div id="notification"></div>
+
+    <div>
+        <button onclick="saveHistory()">Save History to PDF</button>
+        <button onclick="confirmResetHistory()">Reset History</button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <button onclick="toggleCalculator()">Toggle Calculator</button>
+    <div id="calculator" class="hidden">
+        <input type="text" id="calcDisplay" disabled>
+        <div class="calculator">
+            <button onclick="addToExpression('1')">1</button>
+            <button onclick="addToExpression('2')">2</button>
+            <button onclick="addToExpression('3')">3</button>
+            <button onclick="addToExpression('/')">÷</button>
+            <button onclick="addToExpression('4')">4</button>
+            <button onclick="addToExpression('5')">5</button>
+            <button onclick="addToExpression('6')">6</button>
+            <button onclick="addToExpression('*')">x</button>
+            <button onclick="addToExpression('7')">7</button>
+            <button onclick="addToExpression('8')">8</button>
+            <button onclick="addToExpression('9')">9</button>
+            <button onclick="addToExpression('-')">-</button>
+            <button onclick="addToExpression('0')">0</button>
+            <button onclick="addToExpression('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="addToExpression('+')">+</button>
+            <button onclick="clearExpression()">C</button>
+        </div>
+        <div id="calcResult" class="result"></div>
+    </div>
+</div>
+
+<script>
+    let history = [];
+    let totalCorrect = 0;
+    let totalIncorrect = 0;
+    let totalRandomCorrect = 0;
+    let currentQuestion = '';
+    let currentAnswer = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showInstructions();
+        nextQuestion();
+    });
+
+    function showInstructions() {
+        alert("Instructions - READ CAREFULLY!!\n\n" +
+              "1. Enter your Name and Student Number.\n" +
+              "2. Select the type of question - 'Random' is selected by default (Nearest Whole Number, Decimal Places, or Significant Figures).\n" +
+              "3. Enter your answer in the input box and press 'Submit'.\n" +
+              "4. Your answer will be checked, and you can see your results.\n" +
+              "5. Click 'Next Question' to move on after submitting your answer.\n" +
+              "6. Save your question history as a PDF when needed. Pay attention to where you save it.\n" +
+              "7. Use the calculator for any calculations.\n\n" +
+              "A D.Glover program");
+    }
+
+    function generateNearestWholeNumberQuestion() {
+        const number = (Math.random() * 9999.99).toFixed(2);
+        const answer = Math.round(number);
+        const question = `Round ${number} to the nearest whole number.`;
+        return {question, answer};
+    }
+
+    function generateDecimalPlacesQuestion() {
+        const number = (Math.random() * 9999.9999).toFixed(4);
+        const decimalPlaces = Math.floor(Math.random() * 4) + 1;
+        const answer = parseFloat(number).toFixed(decimalPlaces);
+        const question = `Round ${number} to ${decimalPlaces} decimal place(s).`;
+        return {question, answer};
+    }
+
+    function generateSignificantFiguresQuestion() {
+        const number = (Math.random() * 9999.9999).toFixed(6);
+        const significantFigures = Math.floor(Math.random() * 4) + 1;
+        const answer = Number.parseFloat(number).toPrecision(significantFigures);
+        const question = `Round ${number} to ${significantFigures} significant figure(s).`;
+        return {question, answer};
+    }
+
+    function checkAnswer() {
+        const answerInput = document.getElementById('answerInput').value;
+        if (isNaN(answerInput) || answerInput.trim() === '') {
+            document.getElementById('notification').innerText = 'Please enter a valid number.';
+            return;
+        }
+        const userAnswer = parseFloat(answerInput);
+        let result;
+        if (Math.abs(userAnswer - currentAnswer) < 0.01) {
+            result = `Correct! Answer: ${currentAnswer}`;
+            totalCorrect++;
+            if (document.querySelector('input[name="questionType"]:checked').value === "Random") {
+                totalRandomCorrect++;
+            }
+        } else {
+            result = `Incorrect. The correct answer is ${currentAnswer}.`;
+            totalIncorrect++;
+        }
+
+        history.push({question: currentQuestion, userAnswer, result, type: document.querySelector('input[name="questionType"]:checked').value});
+        document.getElementById('result').innerText = result;
+        document.getElementById('notification').innerText = `Question ${history.length} submitted.`;
+        document.getElementById('nextQuestionBtn').disabled = false;
+        document.querySelector('button[onclick="checkAnswer()"]').disabled = true;
+    }
+
+    function nextQuestion() {
+        const questionType = document.querySelector('input[name="questionType"]:checked').value;
+        let questionData;
+        if (questionType === "Random") {
+            const randomType = Math.random();
+            if (randomType < 0.33) {
+                questionData = generateNearestWholeNumberQuestion();
+            } else if (randomType < 0.66) {
+                questionData = generateDecimalPlacesQuestion();
+            } else {
+                questionData = generateSignificantFiguresQuestion();
+            }
+        } else if (questionType === "Nearest Whole Number") {
+            questionData = generateNearestWholeNumberQuestion();
+        } else if (questionType === "Decimal Places") {
+            questionData = generateDecimalPlacesQuestion();
+        } else {
+            questionData = generateSignificantFiguresQuestion();
+        }
+        currentQuestion = questionData.question;
+        currentAnswer = questionData.answer;
+
+        document.getElementById('question').innerText = currentQuestion;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('result').innerText = '';
+        document.getElementById('notification').innerText = '';
+        document.getElementById('nextQuestionBtn').disabled = true;
+        document.querySelector('button[onclick="checkAnswer()"]').disabled = false;
+    }
+
+    function saveHistory() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const studentName = document.getElementById('studentName').value;
+        const studentNumber = document.getElementById('studentNumber').value;
+        const fileName = `${studentName}_${studentNumber}_RoundingWorksheet.pdf`;
+
+        doc.text(`Student Name: ${studentName}`, 10, 10);
+        doc.text(`Student Number: ${studentNumber}`, 10, 20);
+        doc.text(`Total Questions Attempted: ${history.length}`, 10, 30);
+        doc.text(`Total Correct: ${totalCorrect}`, 10, 40);
+        doc.text(`Total Incorrect: ${totalIncorrect}`, 10, 50);
+        doc.text(`Total Random Correct: ${totalRandomCorrect}`, 10, 60);
+
+        history.forEach((entry, index) => {
+            doc.text(`${index + 1}. ${entry.question}`, 10, 70 + (index * 10));
+            doc.text(`Your Answer: ${entry.userAnswer} | Result: ${entry.result}`, 10, 80 + (index * 10));
+        });
+
+        doc.save(fileName);
+    }
+
+    function confirmResetHistory() {
+        if (confirm('Are you sure you want to reset the history? This action cannot be undone.')) {
+            resetHistory();
+        }
+    }
+
+    function resetHistory() {
+        history = [];
+        totalCorrect = 0;
+        totalIncorrect = 0;
+        totalRandomCorrect = 0;
+        nextQuestion();
+    }
+
+    function toggleCalculator() {
+        const calculator = document.getElementById('calculator');
+        calculator.classList.toggle('hidden');
+    }
+
+    function addToExpression(value) {
+        const calcDisplay = document.getElementById('calcDisplay');
+        calcDisplay.value += value;
+    }
+
+    function calculate() {
+        const calcDisplay = document.getElementById('calcDisplay');
+        try {
+            calcDisplay.value = eval(calcDisplay.value);
+        } catch (error) {
+            calcDisplay.value = 'Error';
+        }
+    }
+
+    function clearExpression() {
+        document.getElementById('calcDisplay').value = '';
+    }
+</script>
+</body>
+</html>
