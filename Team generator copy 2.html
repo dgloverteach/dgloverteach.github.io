@@ -88,6 +88,22 @@
             const odsData = XLSX.write(wb, { bookType: 'ods', type: 'array' });
             saveAs(new Blob([odsData], { type: 'application/vnd.oasis.opendocument.spreadsheet' }), 'TeamLists.ods');
         }
+
+        document.getElementById('exportBtn').style.display = 'inline';
+
+    function exportToExcel() {
+        let wb = XLSX.utils.book_new();
+
+        allTeamLists.forEach((teamList, index) => {
+            let ws_data = teamList.map((team, i) => [`Team ${i + 1}`, ...team]);
+            let ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, `Teams List ${index + 1}`);
+        });
+
+        XLSX.writeFile(wb, 'TeamList.xlsx');
+    }
+        document.getElementById('exportBtn').style.display = 'inline';
+
     </script>
 </body>
 </html>
