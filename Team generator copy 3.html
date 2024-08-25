@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/SheetJS/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/odsjs"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Random Team Generator</h1>
+    <label for="nameInput">Enter names (one per line):</label>
+    <textarea id="nameInput" rows="10" cols="50" placeholder="Enter names..."></textarea>
+
+    <label for="numLists">How many lists to generate:</label>
+    <input type="number" id="numLists" value="1" min="1">
+
+    <button onclick="generateTeams()">Generate Teams</button>
+
+    <div id="teamLists" class="hidden">
+        <h2>Generated Team Lists</h2>
+        <div id="result"></div>
+        <button onclick="exportToODS()">Export to .ods</button>
+        <button onclick="exportToXLSX()">Export to .xlsx</button>
+    </div>
+</div>
+
+<script>
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function generateTeams() {
+        const names = document.getElementById('nameInput').value.trim().split('\n').filter(name => name !== '');
+        const numLists = parseInt(document.getElementById('numLists').value);
+
+        if (names.length < 2) {
+            alert('Please enter at least two names.');
+            return;
+        }
+
+        const resultContainer = document.getElementById('result');
+        resultContainer.innerHTML = '';
+
+        for (let n = 1; n <= numLists; n++) {
+            const shuffledNames = shuffle([...names]);
+            const teams = [];
+
+            for (let i = 0; i < shuffledNames.length; i += 2) {
+                const team = shuffledNames.slice(i, i + 2);
+                teams.push(team.join(' & '));
+            }
+
+            const listDiv = document.createElement('div');
+            listDiv.innerHTML = `<h3>Week ${n}</h3><ul>${teams.map(team => `<li>${team}</li>`).join('')}</ul>`;
+            resultContainer.appendChild(listDiv);
+        }
+
+        document.getElementById('teamLists').classList.remove('hidden');
+    }
+
+    function exportToODS() {
+        const numLists = parseInt(document.getElementById('numLists').value);
+        const workbook = new ODS.Workbook();
+
+        for (let n = 1; n <= numLists; n++) {
+            const sheet = workbook.sheet(`Week ${n}`);
+            const teams = document.querySelectorAll(`#result div:nth-child(${n}) ul li`);
+            teams.forEach((team, index) => {
+                sheet.row(index + 1).cell(1).value(team.textContent);
+            });
+        }
+
+        workbook.saveAs("Team_Lists.ods");
+    }
+
+    function exportToXLSX() {
+        const numLists = parseInt(document.getElementById('numLists').value);
+        const workbook = XLSX.utils.book_new();
+
+        for (let n = 1; n <= numLists; n++) {
+            const teams = document.querySelectorAll(`#result div:nth-child(${n}) ul li`);
+            const teamArray = Array.from(teams).map(team => [team.textContent]);
+            const worksheet = XLSX.utils.aoa_to_sheet(teamArray);
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, `Week ${n}`);
+        }
+
+        XLSX.writeFile(workbook, "Team_Lists.xlsx");
+    }
+</script>
+</body>
+</html>

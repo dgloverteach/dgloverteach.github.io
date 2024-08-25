@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Team Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Random Team Generator</h1>
+<p>Paste your list of names below (each name on a new line):</p>
+
+<textarea id="nameInput" placeholder="Enter or paste names here..."></textarea>
+<br>
+<label for="generateCount">Number of team lists to generate:</label>
+<input type="number" id="generateCount" value="1" min="1" max="10">
+<br>
+<button onclick="generateTeams()">Generate Teams</button>
+
+<div id="result" class="result"></div>
+<button id="exportBtn" style="display: none;" onclick="exportToExcel()">Export to Excel</button>
+
+<script>
+    let allTeamLists = [];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function generateTeams() {
+        const nameInput = document.getElementById('nameInput').value.trim();
+        const generateCount = document.getElementById('generateCount').value;
+
+        if (nameInput === '') {
+            alert('Please enter some names.');
+            return;
+        }
+
+        let names = nameInput.split('\n').map(name => name.trim()).filter(name => name !== '');
+        allTeamLists = [];
+
+        let resultHtml = '';
+        for (let i = 0; i < generateCount; i++) {
+            let teamList = [];
+            let namesCopy = [...names];
+            shuffleArray(namesCopy);
+
+            while (namesCopy.length >= 2) {
+                const team = [namesCopy.pop(), namesCopy.pop()];
+                teamList.push(team);
+            }
+
+            if (namesCopy.length === 1) {
+                teamList.push(['Unpaired', namesCopy[0]]);
+            }
+
+            allTeamLists.push(teamList);
+
+            resultHtml += `<h2>Teams List ${i + 1}</h2><ul>`;
+            teamList.forEach((team, index) => {
+                resultHtml += `<li>Team ${index + 1}: ${team.join(' and ')}</li>`;
+            });
+            resultHtml += '</ul>';
+        }
+
+        document.getElementById('result').innerHTML = resultHtml;
+        document.getElementById('exportBtn').style.display = 'inline';
+    }
+
+    function exportToExcel() {
+        let wb = XLSX.utils.book_new();
+
+        allTeamLists.forEach((teamList, index) => {
+            let ws_data = teamList.map((team, i) => [`Team ${i + 1}`, ...team]);
+            let ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, `Teams List ${index + 1}`);
+        });
+
+        XLSX.writeFile(wb, 'TeamList.xlsx');
+    }
+</script>
+
+</body>
+</html>
