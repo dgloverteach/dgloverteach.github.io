@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gear Ratio Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .gear-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 50px 0;
+        }
+        .gear {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            border: 10px solid #333;
+            box-shadow: inset 0px 0px 15px #000;
+        }
+        .gear::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background-color: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .gear-label {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .gear-label.teeth {
+            top: 80%;
+        }
+        .form-container {
+            margin: 30px;
+        }
+        .form-container input[type="text"], .form-container input[type="number"] {
+            width: 250px;
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .form-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .result-container {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+        .power-input {
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gear Ratio Calculator</h1>
+    
+    <div class="gear-container">
+        <div class="gear">
+            <div class="gear-label">Gear 1</div>
+            <div class="gear-label teeth">20 Teeth</div>
+        </div>
+        <div class="gear">
+            <div class="gear-label">Gear 2</div>
+            <div class="gear-label teeth">30 Teeth</div>
+        </div>
+        <div class="gear">
+            <div class="gear-label">Gear 3</div>
+            <div class="gear-label teeth">40 Teeth</div>
+        </div>
+        <div class="gear">
+            <div class="gear-label">Gear 4</div>
+            <div class="gear-label teeth">50 Teeth</div>
+        </div>
+    </div>
+
+    <div class="power-input">
+        Power Input -> Gear 1
+    </div>
+
+    <div class="form-container">
+        <input type="text" id="studentName" placeholder="Enter your name" required>
+        <input type="number" id="studentNumber" placeholder="Enter your student number" required>
+        <input type="number" id="gearRatio" placeholder="Enter gear ratio from Gear 1 to Gear 4" step="0.01" required>
+        <button onclick="calculateRatio()">Submit</button>
+    </div>
+
+    <div class="result-container" id="result"></div>
+
+    <button onclick="saveToPDF()">Save to PDF</button>
+
+    <script>
+        function calculateRatio() {
+            const gear1Teeth = 20;
+            const gear4Teeth = 50;
+            const inputRatio = parseFloat(document.getElementById('gearRatio').value);
+            const correctRatio = gear4Teeth / gear1Teeth;
+
+            let resultText = '';
+            if (inputRatio === correctRatio) {
+                resultText = `Correct! The gear ratio is ${correctRatio.toFixed(2)}.`;
+            } else {
+                resultText = `Incorrect. The correct gear ratio is ${correctRatio.toFixed(2)}.<br>`;
+            }
+            resultText += `Explanation: Gear ratio is calculated by dividing the number of teeth on the driven gear (Gear 4) by the number of teeth on the driving gear (Gear 1).<br>`;
+            resultText += `Formula: Gear Ratio = Teeth on Gear 4 / Teeth on Gear 1 = ${gear4Teeth} / ${gear1Teeth} = ${correctRatio.toFixed(2)}`;
+
+            document.getElementById('result').innerHTML = resultText;
+        }
+
+        function saveToPDF() {
+            const element = document.body;
+            html2pdf()
+                .from(element)
+                .save('GearRatioCalculator.pdf');
+        }
+    </script>
+    <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+</body>
+</html>
