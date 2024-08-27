@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engine Compression Ratio Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 5px;
+        }
+        .question-container, .answer-container {
+            margin-top: 20px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Engine Compression Ratio Calculator</h1>
+
+    <div class="content">
+        <h2>How to Calculate Engine Compression Ratio</h2>
+        <p>
+            The compression ratio (CR) of an engine is calculated using the formula:
+            <strong>CR = (V<sub>c</sub> + V<sub>d</sub>) / V<sub>c</sub></strong>
+        </p>
+        <ul>
+            <li><strong>V<sub>c</sub></strong> = Combustion Chamber Volume (the volume of the cylinder when the piston is at the top of its stroke)</li>
+            <li><strong>V<sub>d</sub></strong> = Displacement Volume (the volume of the cylinder when the piston is at the bottom of its stroke)</li>
+        </ul>
+        <p>
+            <strong>Example:</strong> If the combustion chamber volume (V<sub>c</sub>) is 50 cc and the displacement volume (V<sub>d</sub>) is 450 cc, then:
+        </p>
+        <p>
+            <strong>CR = (50 + 450) / 50 = 10</strong>
+        </p>
+    </div>
+
+    <div class="content">
+        <h2>Practice Questions</h2>
+        <button onclick="generateQuestion()">Generate Random Question</button>
+        <button onclick="checkAnswer()">Check Answer</button>
+        <div class="question-container">
+            <pre id="questionOutput">Press "Generate Random Question" to get a question.</pre>
+        </div>
+        <div class="answer-container">
+            <label for="answerInput">Your Answer:</label>
+            <input type="number" id="answerInput" step="0.01">
+            <pre id="answerFeedback"></pre>
+        </div>
+    </div>
+
+    <script>
+        function generateQuestion() {
+            const minVolume = 100; // Minimum displacement volume
+            const maxVolume = 500; // Maximum displacement volume
+
+            // Random combustion chamber volume (Vc) between 10 and 100 cc
+            const Vc = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
+            // Random displacement volume (Vd) between 100 and 500 cc
+            const Vd = Math.floor(Math.random() * (maxVolume - minVolume + 1)) + minVolume;
+
+            // Calculate the correct answer
+            const CR = (Vc + Vd) / Vc;
+
+            // Store the correct answer for later checking
+            document.getElementById('answerFeedback').dataset.correctAnswer = CR.toFixed(2);
+
+            // Display the question
+            document.getElementById('questionOutput').textContent = `What is the compression ratio if the combustion chamber volume is ${Vc} cc and the displacement volume is ${Vd} cc?`;
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answerInput').value.trim());
+            const correctAnswer = parseFloat(document.getElementById('answerFeedback').dataset.correctAnswer);
+
+            if (isNaN(userAnswer)) {
+                document.getElementById('answerFeedback').textContent = 'Please enter a valid number.';
+                return;
+            }
+
+            if (Math.abs(userAnswer - correctAnswer) < 0.01) {
+                document.getElementById('answerFeedback').textContent = 'Correct! Well done.';
+            } else {
+                document.getElementById('answerFeedback').textContent = `Incorrect. The correct answer is ${correctAnswer}.`;
+            }
+        }
+    </script>
+</body>
+</html>

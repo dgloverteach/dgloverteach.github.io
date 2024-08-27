@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Group Assignment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .entry-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 45%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 80px;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Group Assignment</h1>
+    <div class="entry-container">
+        <textarea id="nameInput" placeholder="Paste student names here, each on a new line..."></textarea>
+        <textarea id="subjectInput" placeholder="Paste subjects here, each on a new line..."></textarea>
+    </div>
+    <label for="groupSize">Number of students per group:</label>
+    <input type="number" id="groupSize" min="1">
+    <button onclick="generateGroups()">Generate Groups</button>
+    <button onclick="resetFields()">Reset</button>
+    <pre id="groupOutput"></pre>
+
+    <script>
+        function generateGroups() {
+            const names = document.getElementById('nameInput').value.trim().split('\n').filter(name => name.trim() !== '');
+            const subjects = document.getElementById('subjectInput').value.trim().split('\n').filter(subject => subject.trim() !== '');
+            const groupSize = parseInt(document.getElementById('groupSize').value, 10);
+
+            const numNames = names.length;
+            const numSubjects = subjects.length;
+
+            if (groupSize <= 0 || groupSize > numNames) {
+                alert("Invalid group size.");
+                return;
+            }
+
+            if (numSubjects === 0) {
+                alert("No subjects provided.");
+                return;
+            }
+
+            if (numNames % groupSize !== 0) {
+                alert("Number of students should be divisible by group size.");
+                return;
+            }
+
+            const numGroups = numNames / groupSize;
+            const weeksNeeded = Math.ceil(numGroups / numSubjects);
+            const assignments = [];
+            let availableSubjects = [...subjects];
+            shuffleArray(names);
+
+            for (let week = 0; week < weeksNeeded; week++) {
+                const weekAssignments = [];
+                shuffleArray(availableSubjects);
+
+                for (let group = 0; group < numGroups; group++) {
+                    const groupNames = names.slice(group * groupSize, (group + 1) * groupSize);
+                    const subject = availableSubjects[group % numSubjects];
+
+                    weekAssignments.push({ groupNumber: group + 1, subject, students: groupNames });
+                }
+
+                assignments.push({ week: week + 1, assignments: weekAssignments });
+            }
+
+            displayGroups(assignments);
+        }
+
+        function displayGroups(assignments) {
+            const output = document.getElementById('groupOutput');
+            output.textContent = '';
+
+            assignments.forEach(({ week, assignments }) => {
+                output.textContent += `Week ${week}:\n`;
+                assignments.forEach(({ groupNumber, subject, students }) => {
+                    output.textContent += `  Group ${groupNumber} - Subject: ${subject}\n`;
+                    students.forEach((student, index) => {
+                        output.textContent += `    Student ${index + 1}: ${student}\n`;
+                    });
+                    output.textContent += '\n';
+                });
+            });
+        }
+
+        function resetFields() {
+            document.getElementById('nameInput').value = '';
+            document.getElementById('subjectInput').value = '';
+            document.getElementById('groupSize').value = '';
+            document.getElementById('groupOutput').textContent = '';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
