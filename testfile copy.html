@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* Style for the modal background */
-        .modal {
+        .modal4 {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
             z-index: 1; /* Sit on top */
@@ -11,7 +13,7 @@
             left: 0;
             top: 0;
             width: 100%; /* Full width */
-            height: 100%; /* Full height */
+            height: 90%; /* Full height */
             overflow: auto; /* Enable scroll if needed */
             background-color: rgb(0,0,0); /* Fallback color */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -28,15 +30,15 @@
         }
 
         /* Close button */
-        .close {
+        .close4 {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
 
-        .close:hover,
-        .close:focus {
+        .close4:hover,
+        .close4:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
@@ -60,138 +62,128 @@
 </head>
 <body>
 
-<h2>Instructions Example</h2>
-
 <!-- Trigger button -->
-<button id="myBtn">Open Instructions</button>
+<button id="myBtn4">Division Instructions</button>
 
 <!-- The Modal -->
-<div id="myModal" class="modal">
+<div id="myModal4" class="modal4">
 
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Instructions - READ CAREFULLY!!</h2>
-    <p>Reading the color bands on resistors helps you determine their resistance value and tolerance. Here’s how you can read both 4-band and 5-band resistors:</p>
-    <h3>4-Band Resistors</h3>
-    <p>1. <strong>Identify the Bands</strong>: A 4-band resistor has four colored bands. These bands are read from left to right (with the tolerance band usually on the far right).</p>
-    <p>2. <strong>First and Second Bands</strong>: These represent the first and second significant digits of the resistor value.</p>
-    <p>3. <strong>Third Band</strong>: This represents the multiplier (the number of zeros to add).</p>
-    <p>4. <strong>Fourth Band</strong>: This represents the tolerance (the accuracy of the resistor value).</p>
+    <span class="close4">&times;</span>
+    <h2>Instructions - How to Perform Division</h2>
+    <p>Division is the process of finding out how many times one number is contained within another. Here’s how you can perform division:</p>
     
-    <h3>Color Code Table</h3>
+    <h3>Steps for Long Division</h3>
+    <p>1. <strong>Divide</strong>: Determine how many times the divisor can fit into the dividend. Write the quotient above the line.</p>
+    <p>2. <strong>Multiply</strong>: Multiply the divisor by the quotient and write the result below the dividend.</p>
+    <p>3. <strong>Subtract</strong>: Subtract the result from the dividend to find the remainder.</p>
+    <p>4. <strong>Bring Down</strong>: Bring down the next digit of the dividend (if any) and repeat the process.</p>
+    <p>5. <strong>Continue</strong>: Repeat the steps until all digits have been brought down and the division is complete.</p>
+
+    <h3>Example 1:</h3>
     <table>
         <tr>
-            <th>Color</th>
-            <th>Digit</th>
-            <th>Multiplier</th>
-            <th>Tolerance</th>
+            <th>Step</th>
+            <th>Action</th>
         </tr>
         <tr>
-            <td>Black</td>
-            <td>0</td>
-            <td>×1</td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td>Brown</td>
             <td>1</td>
-            <td>×10</td>
-            <td>±1%</td>
+            <td>Divide: 487 ÷ 4. The divisor (4) goes into 48 (the first two digits of the dividend) 12 times. Write 12 above the line.</td>
         </tr>
         <tr>
-            <td>Red</td>
             <td>2</td>
-            <td>×100</td>
-            <td>±2%</td>
+            <td>Multiply: 4 × 12 = 48. Write 48 below 48.</td>
         </tr>
         <tr>
-            <td>Orange</td>
             <td>3</td>
-            <td>×1,000</td>
-            <td>-</td>
+            <td>Subtract: 48 - 48 = 0. Write 0 below the line.</td>
         </tr>
         <tr>
-            <td>Yellow</td>
             <td>4</td>
-            <td>×10,000</td>
-            <td>-</td>
+            <td>Bring Down: Bring down the next digit (7) to make 07.</td>
         </tr>
         <tr>
-            <td>Green</td>
             <td>5</td>
-            <td>×100,000</td>
-            <td>±0.5%</td>
+            <td>Divide: 07 ÷ 4 = 1 (quotient). Write 1 above the line.</td>
         </tr>
         <tr>
-            <td>Blue</td>
             <td>6</td>
-            <td>×1,000,000</td>
-            <td>±0.25%</td>
+            <td>Multiply: 4 × 1 = 4. Write 4 below 7.</td>
         </tr>
         <tr>
-            <td>Violet</td>
             <td>7</td>
-            <td>×10,000,000</td>
-            <td>±0.1%</td>
+            <td>Subtract: 7 - 4 = 3. Write 3 below the line.</td>
         </tr>
         <tr>
-            <td>Gray</td>
             <td>8</td>
-            <td>×100,000,000</td>
-            <td>±0.05%</td>
+            <td>Result: 121 with a remainder of 3.</td>
+        </tr>
+    </table>
+    
+    <h3>Example 2:</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
         </tr>
         <tr>
-            <td>White</td>
+            <td>1</td>
+            <td>Divide: 1356 ÷ 6. The divisor (6) goes into 13 (the first two digits of the dividend) 2 times. Write 2 above the line.</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Multiply: 6 × 2 = 12. Write 12 below 13.</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Subtract: 13 - 12 = 1. Write 1 below the line.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Bring Down: Bring down the next digit (5) to make 15.</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Divide: 15 ÷ 6 = 2. Write 2 above the line.</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Multiply: 6 × 2 = 12. Write 12 below 15.</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Subtract: 15 - 12 = 3. Write 3 below the line.</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Bring Down: Bring down the next digit (6) to make 36.</td>
+        </tr>
+        <tr>
             <td>9</td>
-            <td>×1,000,000,000</td>
-            <td>-</td>
+            <td>Divide: 36 ÷ 6 = 6. Write 6 above the line.</td>
         </tr>
         <tr>
-            <td>Gold</td>
-            <td>-</td>
-            <td>×0.1</td>
-            <td>±5%</td>
+            <td>10</td>
+            <td>Multiply: 6 × 6 = 36. Write 36 below 36.</td>
         </tr>
         <tr>
-            <td>Silver</td>
-            <td>-</td>
-            <td>×0.01</td>
-            <td>±10%</td>
+            <td>11</td>
+            <td>Subtract: 36 - 36 = 0. Write 0 below the line.</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>Result: 226 with no remainder.</td>
         </tr>
     </table>
 
-    <h3>Example:</h3>
-    <p>For a resistor with bands: Red, Red, Brown, Gold:</p>
-    <ul>
-        <li><strong>Red</strong>: 2</li>
-        <li><strong>Red</strong>: 2</li>
-        <li><strong>Brown</strong>: ×10</li>
-        <li><strong>Gold</strong>: ±5% tolerance</li>
-    </ul>
-    <p>The resistor value is: \(22 \times 10 = 220\) ohms with a ±5% tolerance.</p>
-
-    <h3>5-Band Resistors</h3>
-    <p>1. <strong>Identify the Bands</strong>: A 5-band resistor has five colored bands. These bands are read from left to right.</p>
-    <p>2. <strong>First Three Bands</strong>: These represent the first three significant digits of the resistor value.</p>
-    <p>3. <strong>Fourth Band</strong>: This represents the multiplier.</p>
-    <p>4. <strong>Fifth Band</strong>: This represents the tolerance.</p>
-    
-    <h3>Example:</h3>
-    <p>For a resistor with bands: Brown, Black, Red, Orange, Brown:</p>
-    <ul>
-        <li><strong>Brown</strong>: 1</li>
-        <li><strong>Black</strong>: 0</li>
-        <li><strong>Red</strong>: 2</li>
-        <li><strong>Orange</strong>: ×1,000</li>
-        <li><strong>Brown</strong>: ±1% tolerance</li>
-    </ul>
-    <p>The resistor value is: \(102 \times 1,000 = 102,000\) ohms or 102 kΩ with a ±1% tolerance.</p>
-
     <h3>Summary</h3>
     <ul>
-        <li><strong>4-Band Resistors</strong>: First two bands for significant digits, third for multiplier, fourth for tolerance.</li>
-        <li><strong>5-Band Resistors</strong>: First three bands for significant digits, fourth for multiplier, fifth for tolerance.</li>
+        <li><strong>Divide:</strong> Find out how many times the divisor fits into the dividend.</li>
+        <li><strong>Multiply:</strong> Multiply the divisor by the quotient.</li>
+        <li><strong>Subtract:</strong> Subtract the result from the dividend.</li>
+        <li><strong>Bring Down:</strong> Bring down the next digit (if any).</li>
+        <li><strong>Repeat:</strong> Continue until all digits are processed.</li>
     </ul>
     <p>A D.Glover program</p>
   </div>
@@ -200,28 +192,28 @@
 
 <script>
 // Get the modal
-var modal = document.getElementById("myModal");
+var modal4 = document.getElementById("myModal4");
 
 // Get the button that opens the modal
-var btn = document.getElementById("myBtn");
+var btn4 = document.getElementById("myBtn4");
 
 // Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+var span4 = document.getElementsByClassName("close4")[0];
 
 // When the user clicks the button, open the modal 
-btn.onclick = function() {
-  modal.style.display = "block";
+btn4.onclick = function() {
+  modal4.style.display = "block";
 }
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
+span4.onclick = function() {
+  modal4.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+  if (event.target == modal4) {
+    modal4.style.display = "none";
   }
 }
 </script>
