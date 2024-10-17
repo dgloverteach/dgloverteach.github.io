@@ -311,6 +311,9 @@
         </div>
         <div id="calcResult" class="result" aria-live="polite"></div>
     </div>
+ <!-- Back to Home Page Button -->
+ <button class="back-button" onclick="confirmReturnToHomePage()">Back to Home Page</button>
+</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -603,6 +606,12 @@
             } catch (e) {
                 document.getElementById('calcResult').innerText = 'Error';
             }
+        }
+
+        function confirmReturnToHomePage() {
+        if (confirm('Are you sure you want to go back to the home page?')) {
+            window.location.href = 'https://dgloverteach.github.io/';
+        }
         }
 
         // Initialize the first resistor

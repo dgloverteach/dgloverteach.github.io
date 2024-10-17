@@ -107,6 +107,8 @@
         </div>
         <div id="calcResult" class="result"></div>
     </div>
+ <!-- Back to Home Page Button -->
+ <button class="back-button" onclick="confirmReturnToHomePage()">Back to Home Page</button>
 </div>
 
 <script>
@@ -326,6 +328,13 @@ function nextQuestion() {
         document.getElementById('calcDisplay').value = '';
         document.getElementById('calcResult').innerText = '';
     }
+
+    function confirmReturnToHomePage() {
+        if (confirm('Are you sure you want to go back to the home page?')) {
+            window.location.href = 'https://dgloverteach.github.io/';
+        }
+    }
+
 </script>
 </body>
 </html>
