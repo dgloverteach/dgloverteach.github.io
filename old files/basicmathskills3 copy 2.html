@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Question Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 48px);
+            gap: 10px;
+        }
+        .calculator button {
+            width: 48px;
+            height: 48px;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #notification {
+            color: red;
+            margin-top: 10px;
+        }
+        button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Math Question Generator</h1>
+
+    <div>
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" placeholder="Enter your name">
+
+        <label for="studentNumber">Student Number:</label>
+        <input type="text" id="studentNumber" placeholder="Enter your student number">
+    </div>
+
+    <div>
+        <label>
+            <input type="radio" name="questionType" value="Random" checked>
+            Random
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Addition">
+            Addition
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Subtraction">
+            Subtraction
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Multiplication">
+            Multiplication
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Division">
+            Division
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Rounding">
+            Rounding
+        </label>
+    </div>
+
+    <div id="questionContainer">
+        <h2 id="question"></h2>
+        <input type="text" id="answerInput" placeholder="Enter your answer">
+        <button onclick="checkAnswer()">Submit</button>
+        <button id="nextQuestionButton" onclick="nextQuestion()" disabled>Next Question</button>
+    </div>
+
+    <div id="notification"></div>
+
+    <div>
+        <button onclick="saveHistory()">Save History to PDF</button>
+        <button onclick="confirmResetHistory()">Reset History</button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <button onclick="toggleCalculator()">Toggle Calculator</button>
+    <div id="calculator" class="hidden">
+        <input type="text" id="calcDisplay" disabled>
+        <div class="calculator">
+            <button onclick="addToExpression('1')">1</button>
+            <button onclick="addToExpression('2')">2</button>
+            <button onclick="addToExpression('3')">3</button>
+            <button onclick="addToExpression('/')">÷</button>
+            <button onclick="addToExpression('4')">4</button>
+            <button onclick="addToExpression('5')">5</button>
+            <button onclick="addToExpression('6')">6</button>
+            <button onclick="addToExpression('*')">x</button>
+            <button onclick="addToExpression('7')">7</button>
+            <button onclick="addToExpression('8')">8</button>
+            <button onclick="addToExpression('9')">9</button>
+            <button onclick="addToExpression('-')">-</button>
+            <button onclick="addToExpression('0')">0</button>
+            <button onclick="addToExpression('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="addToExpression('+')">+</button>
+            <button onclick="clearExpression()">C</button>
+        </div>
+        <div id="calcResult" class="result"></div>
+    </div>
+</div>
+
+<script>
+    let history = [];
+    let totalCorrect = 0;
+    let totalIncorrect = 0;
+    let currentQuestion = '';
+    let currentAnswer = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        nextQuestion();
+    });
+
+    function generateAdditionQuestion() {
+        const a = Math.floor(Math.random() * 100) + 1;
+        const b = Math.floor(Math.random() * 100) + 1;
+        return {
+            question: `What is ${a} + ${b}?`,
+            answer: a + b
+        };
+    }
+
+    function generateSubtractionQuestion() {
+        const a = Math.floor(Math.random() * 100) + 1;
+        const b = Math.floor(Math.random() * a) + 1;
+        return {
+            question: `What is ${a} - ${b}?`,
+            answer: a - b
+        };
+    }
+
+    function generateMultiplicationQuestion() {
+        const a = Math.floor(Math.random() * 12) + 1;
+        const b = Math.floor(Math.random() * 12) + 1;
+        return {
+            question: `What is ${a} × ${b}?`,
+            answer: a * b
+        };
+    }
+
+    function generateDivisionQuestion() {
+        const a = Math.floor(Math.random() * 100) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        return {
+            question: `What is ${a} ÷ ${b}?`,
+            answer: (a / b).toFixed(4)
+        };
+    }
+
+    function generateRoundingQuestion() {
+        const a = Math.random() * 100;
+        const decimals = Math.floor(Math.random() * 5); // 0 to 4 decimal places
+        return {
+            question: `Round ${a.toFixed(4)} to ${decimals} decimal places.`,
+            answer: a.toFixed(decimals)
+        };
+    }
+
+    function nextQuestion() {
+        const questionType = document.querySelector('input[name="questionType"]:checked').value;
+        let questionData;
+        switch (questionType) {
+            case "Addition": questionData = generateAdditionQuestion(); break;
+            case "Subtraction": questionData = generateSubtractionQuestion(); break;
+            case "Multiplication": questionData = generateMultiplicationQuestion(); break;
+            case "Division": questionData = generateDivisionQuestion(); break;
+            case "Rounding": questionData = generateRoundingQuestion(); break;
+            default:
+                const randomType = ["Addition", "Subtraction", "Multiplication", "Division", "Rounding"];
+                const randomQuestionType = randomType[Math.floor(Math.random() * randomType.length)];
+                questionData = generateAdditionQuestion();
+                break;
+        }
+        currentQuestion = questionData.question;
+        currentAnswer = questionData.answer;
+
+        document.getElementById('question').innerText = currentQuestion;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('result').innerText = '';
+        document.getElementById('nextQuestionButton').disabled = true;
+    }
+
+    function checkAnswer() {
+        const userAnswer = document.getElementById('answerInput').value.trim();
+        if (userAnswer === '') {
+            document.getElementById('notification').innerText = 'Please enter an answer.';
+            return;
+        }
+
+        const parsedAnswer = parseFloat(userAnswer);
+        if (Math.abs(parsedAnswer - currentAnswer) < 1e-4) {
+            document.getElementById('result').innerText = 'Correct!';
+            totalCorrect++;
+        } else {
+            document.getElementById('result').innerText = `Incorrect! The correct answer was ${currentAnswer}.`;
+            totalIncorrect++;
+        }
+
+        history.push({
+            question: currentQuestion,
+            userAnswer: userAnswer,
+            correctAnswer: currentAnswer,
+            correct: parsedAnswer === currentAnswer
+        });
+
+        document.getElementById('notification').innerText = '';
+        document.getElementById('nextQuestionButton').disabled = false;
+    }
+
+    function saveHistory() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const studentName = document.getElementById('studentName').value.trim();
+        const studentNumber = document.getElementById('studentNumber').value.trim();
+        const documentTitle = 'Math Question Generator'; // You can change this as needed
+
+        if (!studentName || !studentNumber) {
+            alert("Please enter both your student name and student number.");
+            return;
+        }
+
+        doc.text(`${studentName} (${studentNumber}) - ${documentTitle}`, 10, 10);
+        doc.text('Question History', 10, 20);
+
+        history.forEach((entry, index) => {
+            doc.text(`${index + 1}. ${entry.question} Your answer: ${entry.userAnswer} Correct answer: ${entry.correctAnswer} ${entry.correct ? 'Correct' : 'Incorrect'}`, 10, 30 + (index * 10));
+        });
+
+        const totalQuestions = history.length;
+        const totalCorrect = history.filter(entry => entry.correct).length;
+        const totalIncorrect = totalQuestions - totalCorrect;
+
+        doc.text(`Total Questions Attempted: ${totalQuestions}`, 10, 30 + (history.length * 10) + 10);
+        doc.text(`Correct Answers: ${totalCorrect}`, 10, 40 + (history.length * 10) + 10);
+        doc.text(`Incorrect Answers: ${totalIncorrect}`, 10, 50 + (history.length * 10) + 10);
+
+        const filename = `${studentName}_${studentNumber}_${documentTitle}.pdf`;
+        doc.save(filename);
+    }
+
+    function confirmResetHistory() {
+        if (confirm('Are you sure you want to reset the history? This action cannot be undone.')) {
+            history = [];
+            document.getElementById('result').innerText = 'History has been reset.';
+        }
+    }
+
+    function toggleCalculator() {
+        const calculator = document.getElementById('calculator');
+        calculator.classList.toggle('hidden');
+    }
+
+    function addToExpression(value) {
+        document.getElementById('calcDisplay').value += value;
+    }
+
+    function clearExpression() {
+        document.getElementById('calcDisplay').value = '';
+        document.getElementById('calcResult').innerText = '';
+    }
+
+    function calculate() {
+        try {
+            const result = eval(document.getElementById('calcDisplay').value);
+            document.getElementById('calcResult').innerText = result;
+        } catch (e) {
+            document.getElementById('calcResult').innerText = 'Error';
+        }
+    }
+</script>
+</body>
+</html>

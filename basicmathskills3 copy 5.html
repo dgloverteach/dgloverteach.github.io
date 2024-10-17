@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Question Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 48px);
+            gap: 10px;
+        }
+        .calculator button {
+            width: 48px;
+            height: 48px;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #notification {
+            color: red;
+            margin-top: 10px;
+        }
+        button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Math Question Generator</h1>
+
+    <style>
+        /* Style for the modal background */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 90%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Table style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Trigger button -->
+<button id="myBtn">Addition Instructions</button>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Instructions - How to Add Numbers</h2>
+    <p>Addition is the process of combining two or more numbers to find their total. Here’s how you can perform addition:</p>
+    
+    <h3>Steps for Addition</h3>
+    <p>1. <strong>Align the Numbers</strong>: Write the numbers you want to add one below the other, aligning them by their rightmost digits.</p>
+    <p>2. <strong>Start from the Right</strong>: Begin adding from the rightmost digit (the ones place). If the sum is greater than 9, carry over the extra value to the next column on the left.</p>
+    <p>3. <strong>Move Left</strong>: Continue adding each column, moving left, and including any carry-over from the previous column.</p>
+    <p>4. <strong>Write the Total</strong>: Once all columns are added, write down the total sum at the bottom.</p>
+
+    <h3>Example 1:</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Align the numbers: <br>  &nbsp;&nbsp; 123 <br>+&nbsp;456</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Add the ones place: 3 + 6 = 9 (write 9)</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Add the tens place: 2 + 5 = 7 (write 7)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Add the hundreds place: 1 + 4 = 5 (write 5)</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Result: 579</td>
+        </tr>
+    </table>
+    
+    <h3>Example 2 (With Carry Over):</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Align the numbers: <br>  &nbsp;&nbsp; 376 <br>+&nbsp;487</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Add the ones place: 6 + 7 = 13 (write 3 and carry over 1)</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Add the tens place: 7 + 8 = 15 (plus 1 from carry-over = 16; write 6 and carry over 1)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Add the hundreds place: 3 + 4 = 7 (plus 1 from carry-over = 8; write 8)</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Result: 863</td>
+        </tr>
+    </table>
+
+    <h3>Summary</h3>
+    <ul>
+        <li><strong>Align the Numbers:</strong> Place them one below the other.</li>
+        <li><strong>Add from Right to Left:</strong> Start with the ones place.</li>
+        <li><strong>Carry Over if Necessary:</strong> Move any extra value to the next column.</li>
+        <li><strong>Write the Total:</strong> The sum is your final answer.</li>
+    </ul>
+    <p>A D.Glover program</p>
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Style for the modal background */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 90%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Table style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Trigger button -->
+<button id="myBtn2">Subtraction Instructions</button>
+
+<!-- The Modal -->
+<div id="myModal2" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close2">&times;</span>
+    <h2>Instructions - How to Subtract Numbers</h2>
+    <p>Subtraction is the process of finding the difference between two numbers. Here’s how you can perform subtraction:</p>
+    
+    <h3>Steps for Subtraction</h3>
+    <p>1. <strong>Align the Numbers</strong>: Write the numbers you want to subtract one below the other, aligning them by their rightmost digits.</p>
+    <p>2. <strong>Start from the Right</strong>: Begin subtracting from the rightmost digit (the ones place). If the top number is smaller, you will need to borrow from the next column on the left.</p>
+    <p>3. <strong>Move Left</strong>: Continue subtracting each column, moving left, and including any borrowed value.</p>
+    <p>4. <strong>Write the Difference</strong>: Once all columns are subtracted, write down the difference at the bottom.</p>
+
+    <h3>Example 1:</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Align the numbers: <br>  &nbsp;&nbsp;&nbsp;  789 <br>−&nbsp;&nbsp;456</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Subtract the ones place: 9 − 6 = 3 (write 3)</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Subtract the tens place: 8 − 5 = 3 (write 3)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Subtract the hundreds place: 7 − 4 = 3 (write 3)</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Result: 333</td>
+        </tr>
+    </table>
+    
+    <h3>Example 2 (With Borrowing):</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Align the numbers: <br>  &nbsp;&nbsp;&nbsp; 705 <br>−&nbsp;&nbsp;468</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Subtract the ones place: 5 − 8 = -3 (borrow 1 from tens place, so 15 − 8 = 7, write 7)</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Subtract the tens place: 0 − 6 (after borrowing, it’s 9 − 6 = 3, write 3)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Subtract the hundreds place: 6 − 4 = 2 (write 2)</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Result: 237</td>
+        </tr>
+    </table>
+
+    <h3>Summary</h3>
+    <ul>
+        <li><strong>Align the Numbers:</strong> Place them one below the other.</li>
+        <li><strong>Subtract from Right to Left:</strong> Start with the ones place.</li>
+        <li><strong>Borrow if Necessary:</strong> Borrow from the next column when the top digit is smaller.</li>
+        <li><strong>Write the Difference:</strong> The result is your final answer.</li>
+    </ul>
+    <p>A D.Glover program</p>
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+var modal2 = document.getElementById("myModal2");
+
+// Get the button that opens the modal
+var btn2 = document.getElementById("myBtn2");
+
+// Get the <span> element that closes the modal
+var span2 = document.getElementsByClassName("close2")[0];
+
+// When the user clicks the button, open the modal 
+btn2.onclick = function() {
+  modal2.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span2.onclick = function() {
+  modal2.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal2) {
+    modal2.style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Style for the modal background */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 90%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            font-family: Arial, sans-serif;
+            position: relative; /* Needed for positioning the close button */
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Table style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Trigger button -->
+<button id="myBtn3">Multiplication Instructions</button>
+
+<!-- The Modal -->
+<div id="myModal3" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close3">&times;</span>
+    <h2>Instructions - How to Multiply Numbers</h2>
+    <p>Multiplication is the process of adding a number to itself a certain number of times. Here’s how you can perform multiplication:</p>
+    
+    <h3>Steps for Multiplication</h3>
+    <p>1. <strong>Write the Numbers</strong>: Write the numbers you want to multiply one below the other, with the larger number on top.</p>
+    <p>2. <strong>Multiply the Digits</strong>: Start multiplying from the rightmost digit of the bottom number, moving to the left.</p>
+    <p>3. <strong>Carry Over if Needed</strong>: If the multiplication of two digits results in a number greater than 9, write down the unit digit and carry over the ten digit to the next column on the left.</p>
+    <p>4. <strong>Add the Products</strong>: Add all the partial products, taking into account the place value (ones, tens, hundreds, etc.).</p>
+
+    <h3>Example 1: Single-Digit Multiplication</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                Align the numbers:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;7<br>
+                ×&nbsp;&nbsp;&nbsp;&nbsp;3
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Multiply 7 by 3: 21</td>
+        </tr>
+    </table>
+
+    <h3>Example 2: Double-Digit Multiplication</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                Align the numbers:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;23<br>
+                ×&nbsp;&nbsp;&nbsp;&nbsp;15
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>
+                Multiply 3 by 15:<br>
+                3 × 15 = 45
+            </td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>
+                Multiply 2 (tens place) by 15:<br>
+                20 × 15 = 300
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Add the results: 45 + 300 = 345</td>
+        </tr>
+    </table>
+
+    <h3>Example 3: Triple-Digit Multiplication</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                Align the numbers:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;123<br>
+                ×&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;456
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>
+                Multiply 3 by 456:<br>
+                3 × 456 = 1368
+            </td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>
+                Multiply 2 (tens place) by 456:<br>
+                20 × 456 = 9120
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>
+                Multiply 1 (hundreds place) by 456:<br>
+                100 × 456 = 45600
+            </td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Add the results: 1368 + 9120 + 45600 = 56088</td>
+        </tr>
+    </table>
+
+    <h3>Example 4: Decimal Multiplication</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                Align the numbers:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;12.3<br>
+                ×&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.56
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>
+                Ignore the decimal points and multiply 123 by 456:<br>
+                123 × 456 = 56088
+            </td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>
+                Count the total number of decimal places in the original numbers (3):<br>
+                Place the decimal point three places from the right: 56.088
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Final result: 12.3 × 4.56 = 56.088</td>
+        </tr>
+    </table>
+
+    <h3>Summary</h3>
+    <ul>
+        <li><strong>Write the Numbers:</strong> Place them one below the other.</li>
+        <li><strong>Multiply from Right to Left:</strong> Start with the ones place of the bottom number.</li>
+        <li><strong>Carry Over if Necessary:</strong> Carry over when the product exceeds 9.</li>
+        <li><strong>Add the Products:</strong> Sum up all the partial products.</li>
+        <li><strong>For Decimals:</strong> Multiply ignoring the decimals, then adjust the final result by placing the decimal point.</li>
+    </ul>
+    <p>A D.Glover program</p>
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+var modal3 = document.getElementById("myModal3");
+
+// Get the button that opens the modal
+var btn3 = document.getElementById("myBtn3");
+
+// Get the <span> element that closes the modal
+var span3 = document.getElementsByClassName("close3")[0];
+
+// When the user clicks the button, open the modal 
+btn3.onclick = function() {
+  modal3.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span3.onclick = function() {
+  modal3.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal3) {
+    modal3.style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Style for the modal background */
+        .modal4 {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 90%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Close button */
+        .close4 {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close4:hover,
+        .close4:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Table style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Trigger button -->
+<button id="myBtn4">Division Instructions</button>
+
+<!-- The Modal -->
+<div id="myModal4" class="modal4">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close4">&times;</span>
+    <h2>Instructions - How to Perform Division</h2>
+    <p>Division is the process of finding out how many times one number is contained within another. Here’s how you can perform division:</p>
+    
+    <h3>Steps for Long Division</h3>
+    <p>1. <strong>Divide</strong>: Determine how many times the divisor can fit into the dividend. Write the quotient above the line.</p>
+    <p>2. <strong>Multiply</strong>: Multiply the divisor by the quotient and write the result below the dividend.</p>
+    <p>3. <strong>Subtract</strong>: Subtract the result from the dividend to find the remainder.</p>
+    <p>4. <strong>Bring Down</strong>: Bring down the next digit of the dividend (if any) and repeat the process.</p>
+    <p>5. <strong>Continue</strong>: Repeat the steps until all digits have been brought down and the division is complete.</p>
+
+    <h3>Example 1:</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Divide: 487 ÷ 4. The divisor (4) goes into 48 (the first two digits of the dividend) 12 times. Write 12 above the line.</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Multiply: 4 × 12 = 48. Write 48 below 48.</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Subtract: 48 - 48 = 0. Write 0 below the line.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Bring Down: Bring down the next digit (7) to make 07.</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Divide: 07 ÷ 4 = 1 (quotient). Write 1 above the line.</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Multiply: 4 × 1 = 4. Write 4 below 7.</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Subtract: 7 - 4 = 3. Write 3 below the line.</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Result: 121 with a remainder of 3.</td>
+        </tr>
+    </table>
+    
+    <h3>Example 2:</h3>
+    <table>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Divide: 1356 ÷ 6. The divisor (6) goes into 13 (the first two digits of the dividend) 2 times. Write 2 above the line.</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Multiply: 6 × 2 = 12. Write 12 below 13.</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Subtract: 13 - 12 = 1. Write 1 below the line.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Bring Down: Bring down the next digit (5) to make 15.</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Divide: 15 ÷ 6 = 2. Write 2 above the line.</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Multiply: 6 × 2 = 12. Write 12 below 15.</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Subtract: 15 - 12 = 3. Write 3 below the line.</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Bring Down: Bring down the next digit (6) to make 36.</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Divide: 36 ÷ 6 = 6. Write 6 above the line.</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>Multiply: 6 × 6 = 36. Write 36 below 36.</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>Subtract: 36 - 36 = 0. Write 0 below the line.</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>Result: 226 with no remainder.</td>
+        </tr>
+    </table>
+
+    <h3>Summary</h3>
+    <ul>
+        <li><strong>Divide:</strong> Find out how many times the divisor fits into the dividend.</li>
+        <li><strong>Multiply:</strong> Multiply the divisor by the quotient.</li>
+        <li><strong>Subtract:</strong> Subtract the result from the dividend.</li>
+        <li><strong>Bring Down:</strong> Bring down the next digit (if any).</li>
+        <li><strong>Repeat:</strong> Continue until all digits are processed.</li>
+    </ul>
+    <p>A D.Glover program</p>
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+var modal4 = document.getElementById("myModal4");
+
+// Get the button that opens the modal
+var btn4 = document.getElementById("myBtn4");
+
+// Get the <span> element that closes the modal
+var span4 = document.getElementsByClassName("close4")[0];
+
+// When the user clicks the button, open the modal 
+btn4.onclick = function() {
+  modal4.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span4.onclick = function() {
+  modal4.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal4) {
+    modal4.style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>
+
+
+</script>
+
+    <div>
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" placeholder="Enter your name">
+
+        <label for="studentNumber">Student Number:</label>
+        <input type="text" id="studentNumber" placeholder="Enter your student number">
+    </div>
+
+    <div>
+        <label>
+            <input type="radio" name="questionType" value="Random" checked>
+            Random
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Addition">
+            Addition
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Subtraction">
+            Subtraction
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Multiplication">
+            Multiplication
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Division">
+            Division
+        </label>
+        <label>
+            <input type="radio" name="questionType" value="Rounding">
+            Rounding
+        </label>
+    </div>
+
+    <div id="questionContainer">
+        <h2 id="question"></h2>
+        <input type="text" id="answerInput" placeholder="Enter your answer">
+        <button onclick="checkAnswer()">Submit</button>
+        <button id="nextQuestionButton" onclick="nextQuestion()" disabled>Next Question</button>
+    </div>
+
+    <div id="notification"></div>
+
+    <div>
+        <button onclick="saveHistory()">Save History to PDF</button>
+        <button onclick="confirmResetHistory()">Reset History</button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <button onclick="toggleCalculator()">Toggle Calculator</button>
+    <div id="calculator" class="hidden">
+        <input type="text" id="calcDisplay" disabled>
+        <div class="calculator">
+            <button onclick="addToExpression('1')">1</button>
+            <button onclick="addToExpression('2')">2</button>
+            <button onclick="addToExpression('3')">3</button>
+            <button onclick="addToExpression('/')">÷</button>
+            <button onclick="addToExpression('4')">4</button>
+            <button onclick="addToExpression('5')">5</button>
+            <button onclick="addToExpression('6')">6</button>
+            <button onclick="addToExpression('*')">x</button>
+            <button onclick="addToExpression('7')">7</button>
+            <button onclick="addToExpression('8')">8</button>
+            <button onclick="addToExpression('9')">9</button>
+            <button onclick="addToExpression('-')">-</button>
+            <button onclick="addToExpression('0')">0</button>
+            <button onclick="addToExpression('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="addToExpression('+')">+</button>
+            <button onclick="clearExpression()">C</button>
+        </div>
+        <div id="calcResult" class="result"></div>
+    </div>
+</div>
+
+<script>
+    let history = [];
+    let totalCorrect = 0;
+    let totalIncorrect = 0;
+    let currentQuestion = '';
+    let currentAnswer = 0;
+    let showInstructionsNextTime = localStorage.getItem('showInstructionsNextTime') !== 'false';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (showInstructionsNextTime) {
+            showInstructions();
+        }
+        nextQuestion();
+    });
+
+    function showInstructions() {
+        const showAgain = localStorage.getItem('showInstructionsNextTime') !== 'true';
+        
+        if (showAgain) {
+            const userResponse = confirm("Instructions - READ CAREFULLY!!\n\n" +
+                  "1. Enter your Name and Student Number.\n" +
+                  "2. Select the type of question - 'Random' is selected by default (Addition, Subtraction, Multiplication, Division, or Rounding).\n" +
+                  "3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.\n" +
+                  "4. Your answer will be checked, and you can see your results.\n" +
+                  "5. Click 'Next Question' to move on after submitting your answer.\n" +
+                  "6. Save your question history as a PDF when needed. Pay attention to where you save it.\n" +
+                  "7. Use the calculator for any calculations.\n\n" +
+                  "A D.Glover program");
+            localStorage.setItem('showInstructionsNextTime', userResponse ? 'true' : 'false');
+        }
+    }
+
+    function generateAdditionQuestion() {
+        const a = Math.floor(Math.random() * 100) + 1;
+        const b = Math.floor(Math.random() * 100) + 1;
+        return {
+            question: `What is ${a} + ${b}?`,
+            answer: a + b
+        };
+    }
+
+    function generateSubtractionQuestion() {
+        const a = Math.floor(Math.random() * 100) + 1;
+        const b = Math.floor(Math.random() * a) + 1;
+        return {
+            question: `What is ${a} - ${b}?`,
+            answer: a - b
+        };
+    }
+
+    function generateMultiplicationQuestion() {
+        const a = Math.floor(Math.random() * 12) + 1;
+        const b = Math.floor(Math.random() * 12) + 1;
+        return {
+            question: `What is ${a} × ${b}?`,
+            answer: a * b
+        };
+    }
+
+    function generateDivisionQuestion() {
+        const a = Math.floor(Math.random() * 100) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        return {
+            question: `What is ${a} ÷ ${b}?`,
+            answer: (a / b).toFixed(4)
+        };
+    }
+
+    function generateRoundingQuestion() {
+        const a = Math.random() * 100;
+        const decimals = Math.floor(Math.random() * 5); // 0 to 4 decimal places
+        return {
+            question: `Round ${a.toFixed(4)} to ${decimals} decimal places.`,
+            answer: a.toFixed(decimals)
+        };
+    }
+
+    function nextQuestion() {
+        const questionType = document.querySelector('input[name="questionType"]:checked').value;
+        let questionData;
+        if (questionType === "Random") {
+            const randomType = ["Addition", "Subtraction", "Multiplication", "Division", "Rounding"];
+            const randomQuestionType = randomType[Math.floor(Math.random() * randomType.length)];
+            switch (randomQuestionType) {
+                case "Addition": questionData = generateAdditionQuestion(); break;
+                case "Subtraction": questionData = generateSubtractionQuestion(); break;
+                case "Multiplication": questionData = generateMultiplicationQuestion(); break;
+                case "Division": questionData = generateDivisionQuestion(); break;
+                case "Rounding": questionData = generateRoundingQuestion(); break;
+            }
+        } else if (questionType === "Addition") {
+            questionData = generateAdditionQuestion();
+        } else if (questionType === "Subtraction") {
+            questionData = generateSubtractionQuestion();
+        } else if (questionType === "Multiplication") {
+            questionData = generateMultiplicationQuestion();
+        } else if (questionType === "Division") {
+            questionData = generateDivisionQuestion();
+        } else {
+            questionData = generateRoundingQuestion();
+        }
+        currentQuestion = questionData.question;
+        currentAnswer = questionData.answer;
+
+        document.getElementById('question').innerText = currentQuestion;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('result').innerText = '';
+        document.getElementById('nextQuestionButton').disabled = true; // Disable "Next Question" button initially
+    }
+
+    function checkAnswer() {
+        const userAnswer = document.getElementById('answerInput').value.trim();
+        if (userAnswer === '') {
+            document.getElementById('notification').innerText = 'Please enter an answer.';
+            return;
+        }
+
+        const parsedAnswer = parseFloat(userAnswer);
+        if (Math.abs(parsedAnswer - currentAnswer) < 1e-4) { // Using a tolerance for floating point comparison
+            document.getElementById('result').innerText = 'Correct!';
+            totalCorrect++;
+        } else {
+            document.getElementById('result').innerText = `Incorrect! The correct answer was ${currentAnswer}.`;
+            totalIncorrect++;
+        }
+
+        history.push({
+            question: currentQuestion,
+            userAnswer: userAnswer,
+            correctAnswer: currentAnswer,
+            correct: parsedAnswer === currentAnswer
+        });
+
+        document.getElementById('notification').innerText = '';
+        document.getElementById('nextQuestionButton').disabled = false; // Enable "Next Question" button
+    }
+
+    function saveHistory() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text('Question History', 10, 10);
+        history.forEach((entry, index) => {
+            doc.text(`${index + 1}. ${entry.question} Your answer: ${entry.userAnswer} Correct answer: ${entry.correctAnswer} ${entry.correct ? 'Correct' : 'Incorrect'}`, 10, 20 + (index * 10));
+        });
+        doc.save('history.pdf');
+    }
+
+    function saveHistory() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Get student name and number
+    const studentName = document.getElementById('studentName').value.trim();
+    const studentNumber = document.getElementById('studentNumber').value.trim();
+    const documentTitle = 'Math Question Generator'; // Or any other title you want
+
+    if (!studentName || !studentNumber) {
+        alert("Please enter both your student name and student number.");
+        return;
+    }
+
+    // Add stats and history to PDF
+    const totalQuestions = history.length;
+    const totalCorrect = history.filter(entry => entry.correct).length;
+    const totalIncorrect = totalQuestions - totalCorrect;
+
+    doc.text(`${studentName} (${studentNumber}) - ${documentTitle}`, 10, 10);
+    doc.text(`Total Questions Attempted: ${totalQuestions}`, 10, 20);
+    doc.text(`Correct Answers: ${totalCorrect}`, 10, 30);
+    doc.text(`Incorrect Answers: ${totalIncorrect}`, 10, 40);
+
+    doc.text('Question History:', 10, 50);
+    history.forEach((entry, index) => {
+        doc.text(`${index + 1}. ${entry.question} Your answer: ${entry.userAnswer} Correct answer: ${entry.correctAnswer} ${entry.correct ? 'Correct' : 'Incorrect'}`, 10, 60 + (index * 10));
+    });
+
+    const filename = `${studentName}_${studentNumber}_${documentTitle}.pdf`;
+    doc.save(filename);
+}
+
+
+    function confirmResetHistory() {
+        if (confirm('Are you sure you want to reset the history? This action cannot be undone.')) {
+            history = [];
+            document.getElementById('result').innerText = 'History has been reset.';
+        }
+    }
+
+    function toggleCalculator() {
+        const calculator = document.getElementById('calculator');
+        calculator.classList.toggle('hidden');
+    }
+
+    function addToExpression(value) {
+        document.getElementById('calcDisplay').value += value;
+    }
+
+    function clearExpression() {
+        document.getElementById('calcDisplay').value = '';
+        document.getElementById('calcResult').innerText = '';
+    }
+
+    function calculate() {
+        try {
+            const result = eval(document.getElementById('calcDisplay').value);
+            document.getElementById('calcResult').innerText = result;
+        } catch (e) {
+            document.getElementById('calcResult').innerText = 'Error';
+        }
+    }
+</script>
+</body>
+</html>
