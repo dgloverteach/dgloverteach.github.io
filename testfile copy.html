@@ -3,220 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rounding Instructions</title>
     <style>
-        /* Style for the modal background */
-        .modal4 {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            padding-top: 100px; /* Location of the box */
+        /* Basic Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 90%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
-        /* Modal content */
         .modal-content {
             background-color: #fefefe;
             margin: auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            font-family: Arial, sans-serif;
         }
 
-        /* Close button */
-        .close4 {
+        .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
 
-        .close4:hover,
-        .close4:focus {
+        .close:hover, .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
-        }
-
-        /* Table style */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table, th, td {
-            border: 1px solid black;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
 
-<!-- Trigger button -->
-<button id="myBtn4">Division Instructions</button>
+    <!-- Buttons to Open Modals -->
+    <button id="wholeNumberBtn">Rounding to Whole Number</button>
+    <button id="decimalPlacesBtn">Rounding to Decimal Places</button>
+    <button id="significantFiguresBtn">Rounding to Significant Figures</button>
 
-<!-- The Modal -->
-<div id="myModal4" class="modal4">
+    <!-- Modal for Rounding to Whole Number -->
+    <div id="wholeNumberModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeWholeNumber">&times;</span>
+            <h2>Instructions: Rounding to the Nearest Whole Number</h2>
+            <p>1. Identify the digit in the ones place.</p>
+            <p>2. Look at the digit immediately to the right (the tenths place).</p>
+            <p>3. If the tenths digit is 5 or greater, round the ones digit up by 1.</p>
+            <p>4. If the tenths digit is less than 5, leave the ones digit unchanged.</p>
+            <p>5. All digits after the decimal point become zero or are removed.</p>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Example 1:</strong> Round 4.76 to the nearest whole number:<br>
+                    Look at the tenths place (7). It’s greater than 5, so round up.<br>The answer is 5.</li>
+                <li><strong>Example 2:</strong> Round 3.14 to the nearest whole number:<br>
+                    Look at the tenths place (1). It’s less than 5, so keep the ones digit unchanged.<br>The answer is 3.</li>
+                <li><strong>Example 3:</strong> Round 2.50 to the nearest whole number:<br>
+                    Look at the tenths place (5). It’s 5, so round the ones digit up.<br>The answer is 3.</li>
+                <li><strong>Example 4:</strong> Round 8.23 to the nearest whole number:<br>
+                    Look at the tenths place (2). It’s less than 5, so keep the ones digit unchanged.<br>The answer is 8.</li>
+            </ul>
+        </div>
+    </div>
 
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close4">&times;</span>
-    <h2>Instructions - How to Perform Division</h2>
-    <p>Division is the process of finding out how many times one number is contained within another. Here’s how you can perform division:</p>
-    
-    <h3>Steps for Long Division</h3>
-    <p>1. <strong>Divide</strong>: Determine how many times the divisor can fit into the dividend. Write the quotient above the line.</p>
-    <p>2. <strong>Multiply</strong>: Multiply the divisor by the quotient and write the result below the dividend.</p>
-    <p>3. <strong>Subtract</strong>: Subtract the result from the dividend to find the remainder.</p>
-    <p>4. <strong>Bring Down</strong>: Bring down the next digit of the dividend (if any) and repeat the process.</p>
-    <p>5. <strong>Continue</strong>: Repeat the steps until all digits have been brought down and the division is complete.</p>
+    <!-- Modal for Rounding to Decimal Places -->
+    <div id="decimalPlacesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeDecimalPlaces">&times;</span>
+            <h2>Instructions: Rounding to Decimal Places</h2>
+            <p>1. Count the required number of decimal places from the left.</p>
+            <p>2. Look at the digit immediately to the right of the last required decimal place.</p>
+            <p>3. If this digit is 5 or greater, round the last required decimal place up by 1.</p>
+            <p>4. If this digit is less than 5, leave the decimal place unchanged.</p>
+            <p>5. Remove all digits beyond the required decimal places.</p>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Example 1:</strong> Round 3.14159 to 2 decimal places:<br>
+                    Look at the third decimal place (1). It’s less than 5, so leave the second decimal place as it is.<br>The answer is 3.14.</li>
+                <li><strong>Example 2:</strong> Round 5.6789 to 3 decimal places:<br>
+                    Look at the fourth decimal place (9). It’s greater than 5, so round the third decimal place up.<br>The answer is 5.679.</li>
+                <li><strong>Example 3:</strong> Round 9.9999 to 1 decimal place:<br>
+                    Look at the second decimal place (9). It’s 9, so round the first decimal place up.<br>The answer is 10.0.</li>
+                <li><strong>Example 4:</strong> Round 0.45678 to 3 decimal places:<br>
+                    Look at the fourth decimal place (7). It’s greater than 5, so round the third decimal place up.<br>The answer is 0.457.</li>
+            </ul>
+        </div>
+    </div>
 
-    <h3>Example 1:</h3>
-    <table>
-        <tr>
-            <th>Step</th>
-            <th>Action</th>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>Divide: 487 ÷ 4. The divisor (4) goes into 48 (the first two digits of the dividend) 12 times. Write 12 above the line.</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Multiply: 4 × 12 = 48. Write 48 below 48.</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Subtract: 48 - 48 = 0. Write 0 below the line.</td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>Bring Down: Bring down the next digit (7) to make 07.</td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>Divide: 07 ÷ 4 = 1 (quotient). Write 1 above the line.</td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>Multiply: 4 × 1 = 4. Write 4 below 7.</td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>Subtract: 7 - 4 = 3. Write 3 below the line.</td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td>Result: 121 with a remainder of 3.</td>
-        </tr>
-    </table>
-    
-    <h3>Example 2:</h3>
-    <table>
-        <tr>
-            <th>Step</th>
-            <th>Action</th>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>Divide: 1356 ÷ 6. The divisor (6) goes into 13 (the first two digits of the dividend) 2 times. Write 2 above the line.</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Multiply: 6 × 2 = 12. Write 12 below 13.</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Subtract: 13 - 12 = 1. Write 1 below the line.</td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>Bring Down: Bring down the next digit (5) to make 15.</td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>Divide: 15 ÷ 6 = 2. Write 2 above the line.</td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>Multiply: 6 × 2 = 12. Write 12 below 15.</td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>Subtract: 15 - 12 = 3. Write 3 below the line.</td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td>Bring Down: Bring down the next digit (6) to make 36.</td>
-        </tr>
-        <tr>
-            <td>9</td>
-            <td>Divide: 36 ÷ 6 = 6. Write 6 above the line.</td>
-        </tr>
-        <tr>
-            <td>10</td>
-            <td>Multiply: 6 × 6 = 36. Write 36 below 36.</td>
-        </tr>
-        <tr>
-            <td>11</td>
-            <td>Subtract: 36 - 36 = 0. Write 0 below the line.</td>
-        </tr>
-        <tr>
-            <td>12</td>
-            <td>Result: 226 with no remainder.</td>
-        </tr>
-    </table>
+    <!-- Modal for Rounding to Significant Figures -->
+    <div id="significantFiguresModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeSignificantFigures">&times;</span>
+            <h2>Instructions: Rounding to Significant Figures</h2>
+            <p>1. Count the required number of significant figures starting from the leftmost non-zero digit.</p>
+            <p>2. Once you've identified the last significant figure, look at the next digit to the right.</p>
+            <p>3. If this digit is 5 or greater, round the last significant figure up by 1.</p>
+            <p>4. If it is less than 5, leave the last significant figure unchanged.</p>
+            <p>5. Replace any remaining digits with zeros or remove them (if after the decimal point).</p>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Example 1:</strong> Round 0.004567 to 2 significant figures:<br>
+                    The first two significant figures are 4 and 5. Look at the next digit (6). Round the 5 up to 6.<br>The answer is 0.0046.</li>
+                <li><strong>Example 2:</strong> Round 12345 to 3 significant figures:<br>
+                    The first three significant figures are 1, 2, and 3. Look at the fourth digit (4). It’s less than 5, so keep 3 unchanged.<br>The answer is 12300.</li>
+                <li><strong>Example 3:</strong> Round 789.654 to 4 significant figures:<br>
+                    The first four significant figures are 7, 8, 9, and 6. Look at the fifth digit (5). Round the 6 up.<br>The answer is 789.7.</li>
+                <li><strong>Example 4:</strong> Round 0.00034567 to 3 significant figures:<br>
+                    The first three significant figures are 3, 4, and 5. Look at the fourth digit (6). Round the 5 up.<br>The answer is 0.000346.</li>
+            </ul>
+        </div>
+    </div>
 
-    <h3>Summary</h3>
-    <ul>
-        <li><strong>Divide:</strong> Find out how many times the divisor fits into the dividend.</li>
-        <li><strong>Multiply:</strong> Multiply the divisor by the quotient.</li>
-        <li><strong>Subtract:</strong> Subtract the result from the dividend.</li>
-        <li><strong>Bring Down:</strong> Bring down the next digit (if any).</li>
-        <li><strong>Repeat:</strong> Continue until all digits are processed.</li>
-    </ul>
-    <p>A D.Glover program</p>
-  </div>
+    <script>
+        // Modal Logic
+        const wholeNumberModal = document.getElementById('wholeNumberModal');
+        const decimalPlacesModal = document.getElementById('decimalPlacesModal');
+        const significantFiguresModal = document.getElementById('significantFiguresModal');
 
-</div>
+        // Buttons to open modals
+        const wholeNumberBtn = document.getElementById('wholeNumberBtn');
+        const decimalPlacesBtn = document.getElementById('decimalPlacesBtn');
+        const significantFiguresBtn = document.getElementById('significantFiguresBtn');
 
-<script>
-// Get the modal
-var modal4 = document.getElementById("myModal4");
+        // Close buttons
+        const closeWholeNumber = document.getElementById('closeWholeNumber');
+        const closeDecimalPlaces = document.getElementById('closeDecimalPlaces');
+        const closeSignificantFigures = document.getElementById('closeSignificantFigures');
 
-// Get the button that opens the modal
-var btn4 = document.getElementById("myBtn4");
+        // Open modals
+        wholeNumberBtn.onclick = function() {
+            wholeNumberModal.style.display = 'block';
+        };
+        decimalPlacesBtn.onclick = function() {
+            decimalPlacesModal.style.display = 'block';
+        };
+        significantFiguresBtn.onclick = function() {
+            significantFiguresModal.style.display = 'block';
+        };
 
-// Get the <span> element that closes the modal
-var span4 = document.getElementsByClassName("close4")[0];
+        // Close modals
+        closeWholeNumber.onclick = function() {
+            wholeNumberModal.style.display = 'none';
+        };
+        closeDecimalPlaces.onclick = function() {
+            decimalPlacesModal.style.display = 'none';
+        };
+        closeSignificantFigures.onclick = function() {
+            significantFiguresModal.style.display = 'none';
+        };
 
-// When the user clicks the button, open the modal 
-btn4.onclick = function() {
-  modal4.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span4.onclick = function() {
-  modal4.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal4) {
-    modal4.style.display = "none";
-  }
-}
-</script>
+        // Close modals if the user clicks outside of them
+        window.onclick = function(event) {
+            if (event.target === wholeNumberModal) {
+                wholeNumberModal.style.display = 'none';
+            } else if (event.target === decimalPlacesModal) {
+                decimalPlacesModal.style.display = 'none';
+            } else if (event.target === significantFiguresModal) {
+                significantFiguresModal.style.display = 'none';
+            }
+        };
+    </script>
 
 </body>
 </html>

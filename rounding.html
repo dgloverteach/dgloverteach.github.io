@@ -43,6 +43,181 @@
     <h1>Rounding Numbers Question Generator</h1>
     <button onclick="showInstructions()">Show Instructions</button>
 
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rounding Instructions</title>
+        <style>
+            /* Basic Modal Styles */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                padding-top: 100px;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+    
+            .modal-content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+    
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+    
+            .close:hover, .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+    
+        <!-- Buttons to Open Modals -->
+        <button id="wholeNumberBtn">Rounding to Whole Number</button>
+        <button id="decimalPlacesBtn">Rounding to Decimal Places</button>
+        <button id="significantFiguresBtn">Rounding to Significant Figures</button>
+    
+        <!-- Modal for Rounding to Whole Number -->
+        <div id="wholeNumberModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeWholeNumber">&times;</span>
+                <h2>Instructions: Rounding to the Nearest Whole Number</h2>
+                <p>1. Identify the digit in the ones place.</p>
+                <p>2. Look at the digit immediately to the right (the tenths place).</p>
+                <p>3. If the tenths digit is 5 or greater, round the ones digit up by 1.</p>
+                <p>4. If the tenths digit is less than 5, leave the ones digit unchanged.</p>
+                <p>5. All digits after the decimal point become zero or are removed.</p>
+                <h3>Examples:</h3>
+                <ul>
+                    <li><strong>Example 1:</strong> Round 4.76 to the nearest whole number:<br>
+                        Look at the tenths place (7). It’s greater than 5, so round up.<br>The answer is 5.</li>
+                    <li><strong>Example 2:</strong> Round 3.14 to the nearest whole number:<br>
+                        Look at the tenths place (1). It’s less than 5, so keep the ones digit unchanged.<br>The answer is 3.</li>
+                    <li><strong>Example 3:</strong> Round 2.50 to the nearest whole number:<br>
+                        Look at the tenths place (5). It’s 5, so round the ones digit up.<br>The answer is 3.</li>
+                    <li><strong>Example 4:</strong> Round 8.23 to the nearest whole number:<br>
+                        Look at the tenths place (2). It’s less than 5, so keep the ones digit unchanged.<br>The answer is 8.</li>
+                </ul>
+            </div>
+        </div>
+    
+        <!-- Modal for Rounding to Decimal Places -->
+        <div id="decimalPlacesModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeDecimalPlaces">&times;</span>
+                <h2>Instructions: Rounding to Decimal Places</h2>
+                <p>1. Count the required number of decimal places from the left.</p>
+                <p>2. Look at the digit immediately to the right of the last required decimal place.</p>
+                <p>3. If this digit is 5 or greater, round the last required decimal place up by 1.</p>
+                <p>4. If this digit is less than 5, leave the decimal place unchanged.</p>
+                <p>5. Remove all digits beyond the required decimal places.</p>
+                <h3>Examples:</h3>
+                <ul>
+                    <li><strong>Example 1:</strong> Round 3.14159 to 2 decimal places:<br>
+                        Look at the third decimal place (1). It’s less than 5, so leave the second decimal place as it is.<br>The answer is 3.14.</li>
+                    <li><strong>Example 2:</strong> Round 5.6789 to 3 decimal places:<br>
+                        Look at the fourth decimal place (9). It’s greater than 5, so round the third decimal place up.<br>The answer is 5.679.</li>
+                    <li><strong>Example 3:</strong> Round 9.9999 to 1 decimal place:<br>
+                        Look at the second decimal place (9). It’s 9, so round the first decimal place up.<br>The answer is 10.0.</li>
+                    <li><strong>Example 4:</strong> Round 0.45678 to 3 decimal places:<br>
+                        Look at the fourth decimal place (7). It’s greater than 5, so round the third decimal place up.<br>The answer is 0.457.</li>
+                </ul>
+            </div>
+        </div>
+    
+        <!-- Modal for Rounding to Significant Figures -->
+        <div id="significantFiguresModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeSignificantFigures">&times;</span>
+                <h2>Instructions: Rounding to Significant Figures</h2>
+                <p>1. Count the required number of significant figures starting from the leftmost non-zero digit.</p>
+                <p>2. Once you've identified the last significant figure, look at the next digit to the right.</p>
+                <p>3. If this digit is 5 or greater, round the last significant figure up by 1.</p>
+                <p>4. If it is less than 5, leave the last significant figure unchanged.</p>
+                <p>5. Replace any remaining digits with zeros or remove them (if after the decimal point).</p>
+                <h3>Examples:</h3>
+                <ul>
+                    <li><strong>Example 1:</strong> Round 0.004567 to 2 significant figures:<br>
+                        The first two significant figures are 4 and 5. Look at the next digit (6). Round the 5 up to 6.<br>The answer is 0.0046.</li>
+                    <li><strong>Example 2:</strong> Round 12345 to 3 significant figures:<br>
+                        The first three significant figures are 1, 2, and 3. Look at the fourth digit (4). It’s less than 5, so keep 3 unchanged.<br>The answer is 12300.</li>
+                    <li><strong>Example 3:</strong> Round 789.654 to 4 significant figures:<br>
+                        The first four significant figures are 7, 8, 9, and 6. Look at the fifth digit (5). Round the 6 up.<br>The answer is 789.7.</li>
+                    <li><strong>Example 4:</strong> Round 0.00034567 to 3 significant figures:<br>
+                        The first three significant figures are 3, 4, and 5. Look at the fourth digit (6). Round the 5 up.<br>The answer is 0.000346.</li>
+                </ul>
+            </div>
+        </div>
+    
+        <script>
+            // Modal Logic
+            const wholeNumberModal = document.getElementById('wholeNumberModal');
+            const decimalPlacesModal = document.getElementById('decimalPlacesModal');
+            const significantFiguresModal = document.getElementById('significantFiguresModal');
+    
+            // Buttons to open modals
+            const wholeNumberBtn = document.getElementById('wholeNumberBtn');
+            const decimalPlacesBtn = document.getElementById('decimalPlacesBtn');
+            const significantFiguresBtn = document.getElementById('significantFiguresBtn');
+    
+            // Close buttons
+            const closeWholeNumber = document.getElementById('closeWholeNumber');
+            const closeDecimalPlaces = document.getElementById('closeDecimalPlaces');
+            const closeSignificantFigures = document.getElementById('closeSignificantFigures');
+    
+            // Open modals
+            wholeNumberBtn.onclick = function() {
+                wholeNumberModal.style.display = 'block';
+            };
+            decimalPlacesBtn.onclick = function() {
+                decimalPlacesModal.style.display = 'block';
+            };
+            significantFiguresBtn.onclick = function() {
+                significantFiguresModal.style.display = 'block';
+            };
+    
+            // Close modals
+            closeWholeNumber.onclick = function() {
+                wholeNumberModal.style.display = 'none';
+            };
+            closeDecimalPlaces.onclick = function() {
+                decimalPlacesModal.style.display = 'none';
+            };
+            closeSignificantFigures.onclick = function() {
+                significantFiguresModal.style.display = 'none';
+            };
+    
+            // Close modals if the user clicks outside of them
+            window.onclick = function(event) {
+                if (event.target === wholeNumberModal) {
+                    wholeNumberModal.style.display = 'none';
+                } else if (event.target === decimalPlacesModal) {
+                    decimalPlacesModal.style.display = 'none';
+                } else if (event.target === significantFiguresModal) {
+                    significantFiguresModal.style.display = 'none';
+                }
+            };
+        </script>
+    
+    </body>
+    </html>
+    
+
     <div>
         <label for="studentName">Student Name:</label>
         <input type="text" id="studentName" placeholder="Enter your name">
