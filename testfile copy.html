@@ -3,119 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>Ohm's and Watt's Law Instructions</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 0 20px;
-        }
-        .container {
-            text-align: center;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        .button {
-            display: block;
-            width: 200px;
-            padding: 10px;
-            margin: 10px auto;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        /* Blog Section Styles */
-        .blog-section {
-            margin-top: 40px;
-            max-width: 800px;
+        /* Basic Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1;
+            padding-top: 80px;
+            left: 0;
+            top: 0;
             width: 100%;
-        }
-        .blog-post {
-            margin-bottom: 30px;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }    
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            border: 1px solid #888;
+            width: 80%;
+            font-family: Courier;
+            
         }
-        .blog-post h3 {
-            margin-top: 0;
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
         }
-        .blog-post-date {
-            font-size: 0.9em;
-            color: #777;
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Home Page</h1>
-        <h5>Programs by D.Glover</h5>
-        <h3>Note that buttons that display a &#9989; are tested and (mostly) functional. Buttons not displaying a &#9989; are works in progress.</h3>
-        <a href="https://dgloverteach.github.io/ohmslawgen6.html" class="button">Ohm's & Watt's Law &#9989;</a>
-        <a href="https://dgloverteach.github.io/resistors copy 18.html" class="button">Resistor Reading &#9989;</a>
-        <a href="https://dgloverteach.github.io/rounding.html" class="button">Rounding - ready for testing -</a>
-        <a href="https://dgloverteach.github.io/basicmathskills3 copy 5.html" class="button">Basic Math Skills - ready for testing -</a>
-        <a href="https://www.youtube.com/@scannerdanner" class="button" target="_blank">Scanner Danner YouTube &#9989;</a>
-        <a href="https://www.youtube.com/@dennisandthemachines" class="button" target="_blank">Dennis & The Machines YouTube &#9989;</a>
-        <a href="https://dgloverteach.github.io/teacherresources.html" class="button">Teacher Resources</a>
 
-        <!-- Blog Section -->
-        <div class="blog-section">
-            <h2>Latest Blog Posts</h2>
-            <!-- Blog posts will be dynamically inserted here by JavaScript -->
+    <!-- Buttons to Open Modals -->
+    <button id="ohmsLawBtn" class="button">Ohm's Law Instructions</button>
+    <button id="wattsLawBtn" class="button">Watt's Law Instructions</button>
+
+    <!-- Modal for Ohm's Law -->
+    <div id="ohmsLawModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeOhmsLaw">&times;</span>
+            <h2>Instructions: Using Ohm's Law</h2>
+            <p>Ohm's Law is a fundamental principle in electrical engineering that describes the relationship between voltage (V), current (I), and resistance (R) in an electrical circuit. It can be expressed mathematically as:</p>
+            <p><strong>I = V / R</strong></p>
+            <p>Where:</p>
+            <ul>
+                <li><strong>I</strong> = Current (in Amperes, A)</li>
+                <li><strong>V</strong> = Voltage (in Volts, V)</li>
+                <li><strong>R</strong> = Resistance (in Ohms, Ω)</li>
+            </ul>
+            <h3>Understanding the Law:</h3>
+            <p>Ohm's Law indicates that:</p>
+            <ul>
+                <li>As the voltage increases, the current also increases, provided the resistance remains constant. This implies that higher voltage will drive more current through the same resistance.</li>
+                <li>As the resistance increases, the current decreases if the voltage remains constant. This shows that higher resistance will impede current flow.</li>
+                <li>The relationship is linear; a graph of current vs. voltage will yield a straight line for a given resistor.</li>
+            </ul>
+            <h3>Practical Applications:</h3>
+            <p>Ohm's Law is widely used in designing and analyzing electrical circuits. It helps engineers and technicians determine the right components to use based on the desired current and voltage levels.</p>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Example 1:</strong> Find the current when the voltage is 12V and the resistance is 3Ω.<br>
+                    Calculation: <br>
+                    <code>I = V / R = 12V / 3Ω = 4A</code>
+                </li>
+                <li><strong>Example 2:</strong> Find the resistance when the voltage is 24V and the current is 2A.<br>
+                    Calculation: <br>
+                    <code>R = V / I = 24V / 2A = 12Ω</code>
+                </li>
+                <li><strong>Example 3:</strong> Find the voltage when the current is 5A and the resistance is 10Ω.<br>
+                    Calculation: <br>
+                    <code>V = I × R = 5A × 10Ω = 50V</code>
+                </li>
+                <li><strong>Example 4:</strong> If the current is 0.5A and the resistance is 8Ω, find the voltage.<br>
+                    Calculation: <br>
+                    <code>V = I × R = 0.5A × 8Ω = 4V</code>
+
+                    <br>
+                </ul>
+                <p>A D.Glover program </p>
+                <br>
+                <br>
+                <br>
+                <br>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal for Watt's Law -->
+    <div id="wattsLawModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeWattsLaw">&times;</span>
+            <h2>Instructions: Using Watt's Law</h2>
+            <p>Watt's Law relates the power (P) in an electrical circuit to the voltage (V) and the current (I) flowing through it. The law is expressed mathematically as:</p>
+            <p><strong>P = V × I</strong></p>
+            <p>Where:</p>
+            <ul>
+                <li><strong>P</strong> = Power (in Watts, W)</li>
+                <li><strong>V</strong> = Voltage (in Volts, V)</li>
+                <li><strong>I</strong> = Current (in Amperes, A)</li>
+            </ul>
+            <h3>Understanding the Law:</h3>
+            <p>Watt's Law shows that:</p>
+            <ul>
+                <li>Increasing the voltage will result in an increase in power consumption if the current remains constant.</li>
+                <li>Increasing the current will also lead to an increase in power if the voltage stays the same.</li>
+                <li>This law is fundamental in calculating the energy consumption of electrical devices, allowing for better design and efficiency.</li>
+            </ul>
+            <h3>Practical Applications:</h3>
+            <p>Watt's Law is critical in power calculations for electrical devices, allowing engineers to determine how much power is required to run various components safely and efficiently.</p>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Example 1:</strong> Calculate the power when the voltage is 120V and the current is 2A.<br>
+                    Calculation: <br>
+                    <code>P = V × I = 120V × 2A = 240W</code>
+                </li>
+                <li><strong>Example 2:</strong> If the power is 600W and the voltage is 300V, find the current.<br>
+                    Calculation: <br>
+                    <code>I = P / V = 600W / 300V = 2A</code>
+                </li>
+                <li><strong>Example 3:</strong> Find the voltage if the power is 1500W and the current is 6A.<br>
+                    Calculation: <br>
+                    <code>V = P / I = 1500W / 6A = 250V</code>
+                </li>
+                <li><strong>Example 4:</strong> Calculate the power when the voltage is 9V and the current is 0.5A.<br>
+                    Calculation: <br>
+                    <code>P = 9V × 0.5A = 4.5W</code>
+                    <br>
+                </ul>
+                <p>A D.Glover program </p>
+                <br>
+                <br>
+                <br>
+                <br>
+                </li>
+            </ul>
         </div>
     </div>
 
     <script>
-        // Array of blog posts
-        const blogPosts = [
-            {
-                title: "Ohm's Law Explained",
-                date: "October 16, 2024",
-                content: "In this post, we explore Ohm's Law and how it is used in electronics to calculate the relationship between voltage, current, and resistance."
-            },
-            {
-                title: "The Importance of Rounding in Calculations",
-                date: "October 10, 2024",
-                content: "Rounding numbers is crucial in science and engineering. Learn when and how to round to avoid calculation errors."
-            },
-            {
-                title: "Resistor Color Code Guide",
-                date: "September 28, 2024",
-                content: "This guide explains how to read resistor color codes and apply them to identify resistor values."
+        // Modal Logic for Ohm's Law
+        const ohmsLawModal = document.getElementById('ohmsLawModal');
+        const ohmsLawBtn = document.getElementById('ohmsLawBtn');
+        const closeOhmsLaw = document.getElementById('closeOhmsLaw');
+
+        // Open Ohm's Law modal
+        ohmsLawBtn.onclick = function() {
+            ohmsLawModal.style.display = 'block';
+        };
+
+        // Close Ohm's Law modal
+        closeOhmsLaw.onclick = function() {
+            ohmsLawModal.style.display = 'none';
+        };
+
+        // Modal Logic for Watt's Law
+        const wattsLawModal = document.getElementById('wattsLawModal');
+        const wattsLawBtn = document.getElementById('wattsLawBtn');
+        const closeWattsLaw = document.getElementById('closeWattsLaw');
+
+        // Open Watt's Law modal
+        wattsLawBtn.onclick = function() {
+            wattsLawModal.style.display = 'block';
+        };
+
+        // Close Watt's Law modal
+        closeWattsLaw.onclick = function() {
+            wattsLawModal.style.display = 'none';
+        };
+
+        // Close modals if the user clicks outside of them
+        window.onclick = function(event) {
+            if (event.target === ohmsLawModal) {
+                ohmsLawModal.style.display = 'none';
+            } else if (event.target === wattsLawModal) {
+                wattsLawModal.style.display = 'none';
             }
-        ];
-
-        // Function to dynamically add blog posts to the blog section
-        function loadBlogPosts() {
-            const blogSection = document.querySelector('.blog-section');
-
-            blogPosts.forEach(post => {
-                const postDiv = document.createElement('div');
-                postDiv.className = 'blog-post';
-                postDiv.innerHTML = `
-                    <h3>${post.title}</h3>
-                    <p class="blog-post-date">Posted on: ${post.date}</p>
-                    <p>${post.content}</p>
-                `;
-                blogSection.appendChild(postDiv);
-            });
-        }
-
-        // Call the function to load blog posts when the page loads
-        window.onload = loadBlogPosts;
+        };
     </script>
+
 </body>
 </html>
