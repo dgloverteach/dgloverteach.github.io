@@ -83,7 +83,7 @@
 
     <div id="questionContainer">
         <h2 id="question"></h2>
-        <input type="text" id="answerInput" placeholder="Enter your answer">
+        <input type="text" id="answerInput" placeholder="Answer with Unit">
         <button onclick="checkAnswer()">Submit</button>
         <button id="nextQuestionBtn" onclick="nextQuestion()" disabled>Next Question</button>
     </div>
@@ -118,6 +118,8 @@
             <button onclick="calculate()">=</button>
             <button onclick="addToExpression('+')">+</button>
             <button onclick="clearExpression()">C</button>
+            <button onclick="backspace()">⌫</button>
+
         </div>
         <div id="calcResult" class="result"></div>
     </div>
@@ -145,10 +147,11 @@
               "1. Enter your Name and Student Number.\n" +
               "2. Select the type of question - 'Random' is selected by default (Ohm's Law or Watts Law).\n" +
               "3. Enter your answer in the input box (round to TWO decimal places .00) and press 'Submit'.\n" +
-              "4. Your answer will be checked, and you can see your results.\n" +
-              "5. Click 'Next Question' to move on after submitting your answer.\n" +
-              "6. Save your question history as a PDF when needed. Pay attention to where you save it.\n" +
-              "7. Use the calculator for any calculations.\n\n" +
+              "4. Don't forget to add a space and then the unit after your answer. Ex. 12.4 V \n" + 
+              "5. Your answer will be checked, and you can see your results.\n" +
+              "6. Click 'Next Question' to move on after submitting your answer.\n" +
+              "7. Save your question history as a PDF when needed. Pay attention to where you save it.\n" +
+              "8. Use the calculator for any calculations.\n\n" +
               "A D.Glover program");
     }
 
@@ -313,6 +316,11 @@
     function clearExpression() {
         document.getElementById('calcDisplay').value = '';
         document.getElementById('calcResult').textContent = '';
+    }
+
+    function backspace() {
+    const display = document.getElementById('calcDisplay');
+    display.value = display.value.slice(0, -1); // Remove the last character
     }
 
     function calculate() {
