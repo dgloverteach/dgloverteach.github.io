@@ -107,6 +107,8 @@
             <button onclick="calculate()">=</button>
             <button onclick="addToExpression('+')">+</button>
             <button onclick="clearExpression()">C</button>
+            <button onclick="backspace()">⌫</button>
+
         </div>
         <div id="calcResult" class="result"></div>
     </div>
@@ -261,6 +263,11 @@
     function addToExpression(value) {
         const calcDisplay = document.getElementById('calcDisplay');
         calcDisplay.value += value;
+    }
+
+    function backspace() {
+    const display = document.getElementById('calcDisplay');
+    display.value = display.value.slice(0, -1); // Remove the last character
     }
 
     function calculate() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Math Skills</title>
+    <title>Math Question Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <style>
         body {
@@ -44,7 +44,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Basic Math Skills</h1>
+    <h1>Math Question Generator</h1>
 
     <style>
         /* Style for the modal background */
@@ -953,8 +953,6 @@ window.onclick = function(event) {
             <button onclick="calculate()">=</button>
             <button onclick="addToExpression('+')">+</button>
             <button onclick="clearExpression()">C</button>
-            <button onclick="backspace()">⌫</button>
-
         </div>
         <div id="calcResult" class="result"></div>
     </div>
@@ -1100,47 +1098,32 @@ window.onclick = function(event) {
     function saveHistory() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text('Question History', 10, 10);
+     const totalQuestions = history.length;
+        const totalCorrect = history.filter(entry => entry.correct).length;
+        const totalIncorrect = totalQuestions - totalCorrect;
+
+        doc.text(`${studentName} (${studentNumber}) - ${documentTitle}`, 10, 10);
+        doc.text(`Total Questions Attempted: ${totalQuestions}`, 10, 20);
+        doc.text(`Correct Answers: ${totalCorrect}`, 10, 30);
+        doc.text(`Incorrect Answers: ${totalIncorrect}`, 10, 40);
+
+        doc.text('Question History:', 10, 50);
         history.forEach((entry, index) => {
-            doc.text(`${index + 1}. ${entry.question} Your answer: ${entry.userAnswer} Correct answer: ${entry.correctAnswer} ${entry.correct ? 'Correct' : 'Incorrect'}`, 10, 20 + (index * 10));
+            doc.text(`${index + 1}. ${entry.question} Your answer: ${entry.userAnswer} Correct answer: ${entry.correctAnswer} ${entry.correct ? 'Correct' : 'Incorrect'}`, 10, 60 + (index * 10));
         });
-        doc.save('history.pdf');
+
+        const filename = `${studentName}_${studentNumber}_${documentTitle}.pdf`;
+        doc.save(filename);
     }
+        const studentName = document.getElementById('studentName').value.trim();
+        const studentNumber = document.getElementById('studentNumber').value.trim();
+        const documentTitle = 'Math Question Generator';
 
-    function saveHistory() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Get student name and number
-    const studentName = document.getElementById('studentName').value.trim();
-    const studentNumber = document.getElementById('studentNumber').value.trim();
-    const documentTitle = 'Basic Math Skills'; // Or any other title you want
-
-    if (!studentName || !studentNumber) {
-        alert("Please enter both your student name and student number.");
-        return;
-    }
-
-    // Add stats and history to PDF
-    const totalQuestions = history.length;
-    const totalCorrect = history.filter(entry => entry.correct).length;
-    const totalIncorrect = totalQuestions - totalCorrect;
-
-    doc.text(`${studentName} (${studentNumber}) - ${documentTitle}`, 10, 10);
-    doc.text(`Total Questions Attempted: ${totalQuestions}`, 10, 20);
-    doc.text(`Correct Answers: ${totalCorrect}`, 10, 30);
-    doc.text(`Incorrect Answers: ${totalIncorrect}`, 10, 40);
-
-    doc.text('Question History:', 10, 50);
-    history.forEach((entry, index) => {
-        doc.text(`${index + 1}. ${entry.question} Your answer: ${entry.userAnswer} Correct answer: ${entry.correctAnswer} ${entry.correct ? 'Correct' : 'Incorrect'}`, 10, 60 + (index * 10));
-    });
-
-    const filename = `${studentName}_${studentNumber}_${documentTitle}.pdf`;
-    doc.save(filename);
-}
-
-
+        if (!studentName || !studentNumber) {
+            alert("Please enter both your student name and student number.");
+            return;
+        }
+        
     function confirmResetHistory() {
         if (confirm('Are you sure you want to reset the history? This action cannot be undone.')) {
             history = [];
@@ -1151,11 +1134,6 @@ window.onclick = function(event) {
     function toggleCalculator() {
         const calculator = document.getElementById('calculator');
         calculator.classList.toggle('hidden');
-    }
-
-    function backspace() {
-    const display = document.getElementById('calcDisplay');
-    display.value = display.value.slice(0, -1); // Remove the last character
     }
 
     function addToExpression(value) {
