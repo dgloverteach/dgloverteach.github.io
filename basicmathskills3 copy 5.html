@@ -969,6 +969,7 @@ window.onclick = function(event) {
     let totalIncorrect = 0;
     let currentQuestion = '';
     let currentAnswer = 0;
+    let totalQuestionsSubmitted = 0; // Add variable to track total questions submitted
     let showInstructionsNextTime = localStorage.getItem('showInstructionsNextTime') !== 'false';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1075,6 +1076,15 @@ window.onclick = function(event) {
 
     function checkAnswer() {
         const userAnswer = document.getElementById('answerInput').value.trim();
+
+// Check if input is a number
+        if (isNaN(userAnswer) || userAnswer === '') {
+        document.getElementById('notification').innerText = 'Please enter a valid number.';
+        return;
+        }
+
+        totalQuestionsSubmitted++; // Increment the total number of questions submitted
+
         if (userAnswer === '') {
             document.getElementById('notification').innerText = 'Please enter an answer.';
             return;
