@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waveform Reference Library</title>
+    <title>Image Reference Library</title>
     <style>
         body {
             display: flex;
             margin: 0;
             font-family: Arial, sans-serif;
+            position: relative; /* Make body relative for absolute positioning of button */
         }
 
         /* Sidebar styles */
@@ -67,6 +68,25 @@
             max-height: 100%;
             display: block;
         }
+
+        /* Button styles */
+        #backButton {
+            position: absolute;
+            bottom: 20px; /* Space from bottom */
+            left: 20px; /* Space from left */
+            padding: 10px 15px;
+            background-color: #007bff; /* Button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 10; /* Ensure it stays on top of other elements */
+        }
+
+        #backButton:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
     </style>
 </head>
 <body>
@@ -83,11 +103,13 @@
     <div class="watermark">A D.Glover Waveform</div>
 </div>
 
+<button id="backButton" onclick="goHome()">Back to Home Page</button>
+
 <script>
     let images = [];
 
     // Fetch the list of images from the JSON file
-    fetch('Waveforms.json')
+    fetch('images.json')
         .then(response => response.json())
         .then(data => {
             images = data.images;
@@ -122,6 +144,11 @@
             const fileName = file.textContent.toLowerCase();
             file.style.display = fileName.includes(searchInput) ? 'block' : 'none';
         });
+    }
+
+    // Function to go back to the home page
+    function goHome() {
+        window.location.href = 'index.html'; // Adjust the link to your home page as necessary
     }
 </script>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Reference Library</title>
+    <title>Waveform Reference Library</title>
     <style>
         body {
             display: flex;
@@ -87,7 +87,7 @@
     let images = [];
 
     // Fetch the list of images from the JSON file
-    fetch('images.json')
+    fetch('Waveforms.json')
         .then(response => response.json())
         .then(data => {
             images = data.images;
