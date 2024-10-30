@@ -3,22 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ohm's and Watt's Law Instructions</title>
+    <title>Circuit Calculations Trainer</title>
     <style>
-        /* Basic Modal Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        /* Modal Styles */
         .modal {
-            display: none; 
+            display: none;
             position: fixed;
             z-index: 1;
-            padding-top: 80px;
+            padding-top: 100px;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-        }    
+            background-color: rgba(0, 0, 0, 0.5);
+        }
 
         .modal-content {
             background-color: #fefefe;
@@ -26,8 +57,6 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            font-family: Courier;
-            
         }
 
         .close {
@@ -42,157 +71,150 @@
             text-decoration: none;
             cursor: pointer;
         }
-
+        /* Input and Result Styles */
+        input[type="number"], input[type="text"] {
+            width: 60%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        .result {
+            font-size: 1.2em;
+            color: #333;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Buttons to Open Modals -->
-    <button id="ohmsLawBtn" class="button">Ohm's Law Instructions</button>
-    <button id="wattsLawBtn" class="button">Watt's Law Instructions</button>
-
-    <!-- Modal for Ohm's Law -->
-    <div id="ohmsLawModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeOhmsLaw">&times;</span>
-            <h2>Instructions: Using Ohm's Law</h2>
-            <p>Ohm's Law is a fundamental principle in electrical engineering that describes the relationship between voltage (V), current (I), and resistance (R) in an electrical circuit. It can be expressed mathematically as:</p>
-            <p><strong>I = V / R</strong></p>
-            <p>Where:</p>
-            <ul>
-                <li><strong>I</strong> = Current (in Amperes, A)</li>
-                <li><strong>V</strong> = Voltage (in Volts, V)</li>
-                <li><strong>R</strong> = Resistance (in Ohms, Ω)</li>
-            </ul>
-            <h3>Understanding the Law:</h3>
-            <p>Ohm's Law indicates that:</p>
-            <ul>
-                <li>As the voltage increases, the current also increases, provided the resistance remains constant. This implies that higher voltage will drive more current through the same resistance.</li>
-                <li>As the resistance increases, the current decreases if the voltage remains constant. This shows that higher resistance will impede current flow.</li>
-                <li>The relationship is linear; a graph of current vs. voltage will yield a straight line for a given resistor.</li>
-            </ul>
-            <h3>Practical Applications:</h3>
-            <p>Ohm's Law is widely used in designing and analyzing electrical circuits. It helps engineers and technicians determine the right components to use based on the desired current and voltage levels.</p>
-            <h3>Examples:</h3>
-            <ul>
-                <li><strong>Example 1:</strong> Find the current when the voltage is 12V and the resistance is 3Ω.<br>
-                    Calculation: <br>
-                    <code>I = V / R = 12V / 3Ω = 4A</code>
-                </li>
-                <li><strong>Example 2:</strong> Find the resistance when the voltage is 24V and the current is 2A.<br>
-                    Calculation: <br>
-                    <code>R = V / I = 24V / 2A = 12Ω</code>
-                </li>
-                <li><strong>Example 3:</strong> Find the voltage when the current is 5A and the resistance is 10Ω.<br>
-                    Calculation: <br>
-                    <code>V = I × R = 5A × 10Ω = 50V</code>
-                </li>
-                <li><strong>Example 4:</strong> If the current is 0.5A and the resistance is 8Ω, find the voltage.<br>
-                    Calculation: <br>
-                    <code>V = I × R = 0.5A × 8Ω = 4V</code>
-
-                    <br>
-                </ul>
-                <p>A D.Glover program </p>
-                <br>
-                <br>
-                <br>
-                <br>
-                </li>
-            </ul>
-        </div>
+    <h1>Circuit Calculations Trainer</h1>
+    <div class="container">
+        <h2>Calculate Circuit Parameters</h2>
+        
+        <!-- SVG for Circuit Illustration -->
+        <svg id="circuitSVG" width="100%" height="200" style="border: 1px solid #ddd;"></svg>
+        
+        <!-- Input Fields -->
+        <input type="number" id="inputResistance" placeholder="Total Resistance (Ω)" />
+        <input type="number" id="inputVoltage" placeholder="Total Voltage (V)" />
+        <button class="button" onclick="calculateCurrent()">Calculate Current (I)</button>
+        <button class="button" onclick="calculateVoltageDrop()">Calculate Voltage Drop</button>
+        
+        <div class="result" id="resultContainer"></div>
+        <button class="button" id="instructionBtn">Instructions</button>
     </div>
 
-    <!-- Modal for Watt's Law -->
-    <div id="wattsLawModal" class="modal">
+    <!-- Modal for Instructions -->
+    <div id="instructionModal" class="modal">
         <div class="modal-content">
-            <span class="close" id="closeWattsLaw">&times;</span>
-            <h2>Instructions: Using Watt's Law</h2>
-            <p>Watt's Law relates the power (P) in an electrical circuit to the voltage (V) and the current (I) flowing through it. The law is expressed mathematically as:</p>
-            <p><strong>P = V × I</strong></p>
-            <p>Where:</p>
-            <ul>
-                <li><strong>P</strong> = Power (in Watts, W)</li>
-                <li><strong>V</strong> = Voltage (in Volts, V)</li>
-                <li><strong>I</strong> = Current (in Amperes, A)</li>
-            </ul>
-            <h3>Understanding the Law:</h3>
-            <p>Watt's Law shows that:</p>
-            <ul>
-                <li>Increasing the voltage will result in an increase in power consumption if the current remains constant.</li>
-                <li>Increasing the current will also lead to an increase in power if the voltage stays the same.</li>
-                <li>This law is fundamental in calculating the energy consumption of electrical devices, allowing for better design and efficiency.</li>
-            </ul>
-            <h3>Practical Applications:</h3>
-            <p>Watt's Law is critical in power calculations for electrical devices, allowing engineers to determine how much power is required to run various components safely and efficiently.</p>
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Instructions for Circuit Calculations</h2>
+            <h3>Ohm's Law</h3>
+            <p>Ohm's Law states that the current (I) flowing through a conductor is directly proportional to the voltage (V) across it and inversely proportional to the resistance (R). Use the formula:</p>
+            <p><strong>I = V / R</strong></p>
+            <h3>Voltage Drop Calculation</h3>
+            <p>The voltage drop across a resistor can be calculated using:</p>
+            <p><strong>V = I × R</strong></p>
             <h3>Examples:</h3>
             <ul>
-                <li><strong>Example 1:</strong> Calculate the power when the voltage is 120V and the current is 2A.<br>
-                    Calculation: <br>
-                    <code>P = V × I = 120V × 2A = 240W</code>
-                </li>
-                <li><strong>Example 2:</strong> If the power is 600W and the voltage is 300V, find the current.<br>
-                    Calculation: <br>
-                    <code>I = P / V = 600W / 300V = 2A</code>
-                </li>
-                <li><strong>Example 3:</strong> Find the voltage if the power is 1500W and the current is 6A.<br>
-                    Calculation: <br>
-                    <code>V = P / I = 1500W / 6A = 250V</code>
-                </li>
-                <li><strong>Example 4:</strong> Calculate the power when the voltage is 9V and the current is 0.5A.<br>
-                    Calculation: <br>
-                    <code>P = 9V × 0.5A = 4.5W</code>
-                    <br>
-                </ul>
-                <p>A D.Glover program </p>
-                <br>
-                <br>
-                <br>
-                <br>
-                </li>
+                <li><strong>Ohm's Law Example:</strong> If V = 12V and R = 3Ω, then I = <code>12V / 3Ω = 4A</code></li>
+                <li><strong>Voltage Drop Example:</strong> If I = 2A and R = 5Ω, then V = <code>2A × 5Ω = 10V</code></li>
             </ul>
         </div>
     </div>
 
     <script>
-        // Modal Logic for Ohm's Law
-        const ohmsLawModal = document.getElementById('ohmsLawModal');
-        const ohmsLawBtn = document.getElementById('ohmsLawBtn');
-        const closeOhmsLaw = document.getElementById('closeOhmsLaw');
+        // Modal Logic
+        const instructionModal = document.getElementById('instructionModal');
+        const instructionBtn = document.getElementById('instructionBtn');
+        const closeModal = document.getElementById('closeModal');
 
-        // Open Ohm's Law modal
-        ohmsLawBtn.onclick = function() {
-            ohmsLawModal.style.display = 'block';
+        instructionBtn.onclick = function() {
+            instructionModal.style.display = 'block';
         };
 
-        // Close Ohm's Law modal
-        closeOhmsLaw.onclick = function() {
-            ohmsLawModal.style.display = 'none';
+        closeModal.onclick = function() {
+            instructionModal.style.display = 'none';
         };
 
-        // Modal Logic for Watt's Law
-        const wattsLawModal = document.getElementById('wattsLawModal');
-        const wattsLawBtn = document.getElementById('wattsLawBtn');
-        const closeWattsLaw = document.getElementById('closeWattsLaw');
-
-        // Open Watt's Law modal
-        wattsLawBtn.onclick = function() {
-            wattsLawModal.style.display = 'block';
-        };
-
-        // Close Watt's Law modal
-        closeWattsLaw.onclick = function() {
-            wattsLawModal.style.display = 'none';
-        };
-
-        // Close modals if the user clicks outside of them
         window.onclick = function(event) {
-            if (event.target === ohmsLawModal) {
-                ohmsLawModal.style.display = 'none';
-            } else if (event.target === wattsLawModal) {
-                wattsLawModal.style.display = 'none';
+            if (event.target === instructionModal) {
+                instructionModal.style.display = 'none';
             }
         };
+
+        // Function to draw the circuit
+        function drawCircuit(type) {
+            const svg = document.getElementById('circuitSVG');
+            svg.innerHTML = ''; // Clear previous drawings
+
+            if (type === 'series') {
+                // Draw Series Circuit
+                svg.innerHTML = `
+                    <line x1="50" y1="100" x2="150" y2="100" stroke="black" stroke-width="2" />
+                    <rect x="80" y="80" width="30" height="40" fill="none" stroke="blue" />
+                    <text x="85" y="75" font-size="12" fill="black">R1</text>
+                    <circle cx="150" cy="100" r="5" fill="red" />
+                    <text x="155" y="105" font-size="12" fill="black">V</text>
+                `;
+            } else if (type === 'parallel') {
+                // Draw Parallel Circuit
+                svg.innerHTML = `
+                    <line x1="50" y1="100" x2="150" y2="100" stroke="black" stroke-width="2" />
+                    <line x1="50" y1="80" x2="150" y2="80" stroke="black" stroke-width="2" />
+                    <rect x="80" y="60" width="30" height="40" fill="none" stroke="blue" />
+                    <text x="85" y="55" font-size="12" fill="black">R1</text>
+                    <rect x="80" y="120" width="30" height="40" fill="none" stroke="blue" />
+                    <text x="85" y="115" font-size="12" fill="black">R2</text>
+                    <circle cx="150" cy="80" r="5" fill="red" />
+                    <text x="155" y="85" font-size="12" fill="black">V</text>
+                `;
+            } else if (type === 'series-parallel') {
+                // Draw Series-Parallel Circuit
+                svg.innerHTML = `
+                    <line x1="50" y1="100" x2="150" y2="100" stroke="black" stroke-width="2" />
+                    <rect x="80" y="80" width="30" height="40" fill="none" stroke="blue" />
+                    <text x="85" y="75" font-size="12" fill="black">R1</text>
+                    <line x1="150" y1="100" x2="150" y2="40" stroke="black" stroke-width="2" />
+                    <line x1="150" y1="40" x2="250" y2="40" stroke="black" stroke-width="2" />
+                    <line x1="250" y1="40" x2="250" y2="100" stroke="black" stroke-width="2" />
+                    <rect x="200" y="20" width="30" height="40" fill="none" stroke="blue" />
+                    <text x="205" y="15" font-size="12" fill="black">R2</text>
+                    <circle cx="250" cy="100" r="5" fill="red" />
+                    <text x="255" y="105" font-size="12" fill="black">V</text>
+                `;
+            }
+        }
+
+        // Function to calculate current
+        function calculateCurrent() {
+            const resistance = parseFloat(document.getElementById('inputResistance').value);
+            const voltage = parseFloat(document.getElementById('inputVoltage').value);
+            const resultContainer = document.getElementById('resultContainer');
+
+            if (resistance > 0 && voltage > 0) {
+                const current = voltage / resistance; // I = V / R
+                resultContainer.innerHTML = `Calculated Current (I): <strong>${current.toFixed(2)} A</strong>`;
+                drawCircuit('series'); // Change to the desired circuit type
+            } else {
+                resultContainer.innerHTML = 'Please enter valid resistance and voltage values.';
+            }
+        }
+
+        // Function to calculate voltage drop
+        function calculateVoltageDrop() {
+            const resistance = parseFloat(document.getElementById('inputResistance').value);
+            const current = parseFloat(document.getElementById('resultContainer').innerText.match(/[\d.]+/)); // Get current from previous calculation
+            const resultContainer = document.getElementById('resultContainer');
+
+            if (current > 0 && resistance > 0) {
+                const voltageDrop = current * resistance; // V = I × R
+                resultContainer.innerHTML += `<br>Calculated Voltage Drop: <strong>${voltageDrop.toFixed(2)} V</strong>`;
+            } else {
+                resultContainer.innerHTML += '<br>Please calculate the current first.';
+            }
+        }
+
+        // Initial circuit drawing
+        drawCircuit('series'); // Default to series circuit
     </script>
 
 </body>

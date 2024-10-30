@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Whiteboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #toolbar {
+      margin: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    #canvasContainer {
+      overflow: hidden;
+      border: 1px solid #000;
+      position: relative;
+      touch-action: none;
+    }
+    #canvas {
+      cursor: crosshair;
+      transform-origin: 0 0;
+    }
+    .active {
+      background-color: #FFD700;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+
+<h2>Enhanced Whiteboard</h2>
+
+<div id="toolbar">
+  <label>Whiteboard Name:
+    <input type="text" id="whiteboardName" placeholder="Enter file name">
+  </label>
+  <label>Main Brush Color:
+    <input type="color" id="colorPicker" value="#000000" ondblclick="openColorPicker(this)">
+  </label>
+  <button onclick="setBrushColor('#ff0000')">Red Brush</button>
+  <button onclick="setBrushColor('#000000')">Black Brush</button>
+  <button onclick="setBrushColor('#0000ff')">Blue Brush</button>
+  <label>Brush Size:
+    <input type="range" id="brushSize" min="1" max="20" value="5">
+  </label>
+  <label>Eraser Size:
+    <input type="range" id="eraserSize" min="5" max="50" value="20">
+  </label>
+  <button id="eraserButton" onclick="toggleEraser()">Toggle Eraser</button>
+  <label>Zoom:
+    <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1" oninput="zoomCanvas(this.value)">
+  </label>
+  <button onclick="clearCanvas()">Clear</button>
+  <button onclick="saveCanvas('jpeg')">Save as JPEG</button>
+  <button onclick="saveCanvas('png')">Save as PNG</button>
+  <input type="file" id="fileInput" accept="image/*,application/pdf" onchange="importFile(event)">
+</div>
+
+<div id="canvasContainer">
+  <canvas id="canvas" width="800" height="600"></canvas>
+</div>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  let painting = false;
+  let brushColor = document.getElementById("colorPicker").value;
+  let brushSize = document.getElementById("brushSize").value;
+  let eraserSize = document.getElementById("eraserSize").value;
+  let isEraser = false;
+  let scale = 1;
+
+  // Brush color handling
+  function openColorPicker(element) {
+    element.click();
+  }
+  function setBrushColor(color) {
+    brushColor = color;
+    if (!isEraser) ctx.strokeStyle = brushColor;
+  }
+  document.getElementById("colorPicker").addEventListener("change", () => {
+    brushColor = document.getElementById("colorPicker").value;
+    if (!isEraser) ctx.strokeStyle = brushColor;
+  });
+
+  // Update brush size
+  document.getElementById("brushSize").addEventListener("input", (e) => {
+    brushSize = e.target.value;
+  });
+
+  // Update eraser size
+  document.getElementById("eraserSize").addEventListener("input", (e) => {
+    eraserSize = e.target.value;
+  });
+
+  // Toggle eraser function
+  function toggleEraser() {
+    isEraser = !isEraser;
+    document.getElementById("eraserButton").classList.toggle("active", isEraser);
+  }
+
+  // Zoom function with slider
+  function zoomCanvas(value) {
+    scale = value;
+    canvas.style.transform = `scale(${scale})`;
+  }
+
+  // Drawing events
+  canvas.addEventListener("mousedown", startPainting);
+  canvas.addEventListener("mouseup", stopPainting);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseleave", stopPainting);
+
+  // Touch events
+  canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    startPainting(e.touches[0]);
+  });
+  canvas.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    stopPainting(e.changedTouches[0]);
+  });
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    draw(e.touches[0]);
+  });
+
+  function startPainting(e) {
+    painting = true;
+    draw(e);
+  }
+
+  function stopPainting() {
+    painting = false;
+    ctx.beginPath();
+  }
+
+  function draw(e) {
+    if (!painting) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+
+    if (isEraser) {
+      ctx.clearRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize);
+    } else {
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = brushColor;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function saveCanvas(format) {
+    const whiteboardName = document.getElementById("whiteboardName").value || "whiteboard";
+    const link = document.createElement("a");
+    link.download = `${whiteboardName}.${format}`;
+    link.href = canvas.toDataURL(`image/${format}`);
+    link.click();
+  }
+
+  // Import image or PDF
+  async function importFile(event) {
+    const file = event.target.files[0];
+    if (file.type.startsWith("image/")) {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    } else if (file.type === "application/pdf") {
+      const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+      const page = await pdf.getPage(1); // Importing the first page as an example
+      const viewport = page.getViewport({ scale: 1 });
+      const pdfCanvas = document.createElement("canvas");
+      const pdfCtx = pdfCanvas.getContext("2d");
+      pdfCanvas.width = viewport.width;
+      pdfCanvas.height = viewport.height;
+
+      await page.render({ canvasContext: pdfCtx, viewport }).promise;
+      const img = new Image();
+      img.src = pdfCanvas.toDataURL();
+      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+  }
+</script>
+
+</body>
+</html>

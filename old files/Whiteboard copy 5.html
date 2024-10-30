@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Whiteboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+    }
+    #toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 10px;
+      width: 90%;
+      justify-content: space-between;
+    }
+    .toolbar-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+    }
+    #canvasContainer {
+      overflow: hidden;
+      border: 1px solid #000;
+      position: relative;
+      margin-top: 10px;
+    }
+    #canvas {
+      cursor: crosshair;
+    }
+    .active {
+      border: 2px solid #FFD700;
+    }
+    .color-button {
+      width: 40px;
+      height: 40px;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+
+<h2>Advanced Whiteboard</h2>
+
+<div id="toolbar">
+  <div class="toolbar-row">
+    <label>Whiteboard Name:
+      <input type="text" id="whiteboardName" placeholder="Enter file name">
+    </label>
+    <button class="color-button" style="background-color: #ff0000;" onclick="setBrushColor('#ff0000', this)">Red</button>
+    <button class="color-button" style="background-color: #000000;" onclick="setBrushColor('#000000', this)">Black</button>
+    <button class="color-button" style="background-color: #0000ff;" onclick="setBrushColor('#0000ff', this)">Blue</button>
+    <button class="color-button" style="background-color: #000;" onclick="setSparklyRainbow()">Sparkly Rainbow</button>
+    <button onclick="clearCanvas()">Clear</button>
+  </div>
+  <div class="toolbar-row">
+    <label>Brush Size:
+      <input type="range" id="brushSize" min="1" max="20" value="5">
+    </label>
+    <label>Eraser Size:
+      <input type="range" id="eraserSize" min="5" max="50" value="20">
+    </label>
+    <button id="eraserButton" onclick="toggleEraser()">Toggle Eraser</button>
+    <label>Zoom:
+      <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1" oninput="zoomCanvas(this.value)">
+    </label>
+    <button onclick="saveCanvas('jpeg')">Save as JPEG</button>
+    <button onclick="saveCanvas('png')">Save as PNG</button>
+    <input type="file" id="fileInput" accept="image/*,application/pdf" onchange="importFile(event)">
+    <button onclick="previousPDFPage()">Previous Page</button>
+    <button onclick="nextPDFPage()">Next Page</button>
+  </div>
+</div>
+
+<div id="canvasContainer">
+  <canvas id="canvas" width="800" height="600"></canvas>
+</div>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  let painting = false;
+  let brushColor = "#000000"; // Default brush color
+  let brushSize = document.getElementById("brushSize").value;
+  let eraserSize = document.getElementById("eraserSize").value;
+  let isEraser = false;
+  let scale = 1;
+  let currentPDF = null;
+  let currentPDFPage = 1;
+  let sparklyMode = false;
+  let img = null; // Store imported image
+
+  // Brush color handling
+  function setBrushColor(color, button) {
+    sparklyMode = false;
+    brushColor = color;
+    if (!isEraser) ctx.strokeStyle = brushColor;
+
+    // Change button color to indicate selection
+    const buttons = document.querySelectorAll('.color-button');
+    buttons.forEach(btn => btn.style.border = '2px solid transparent');
+    button.style.border = '2px solid #FFD700'; // Highlight selected button
+  }
+
+  function setSparklyRainbow() {
+    sparklyMode = true;
+  }
+
+  // Update brush size
+  document.getElementById("brushSize").addEventListener("input", (e) => {
+    brushSize = e.target.value;
+  });
+
+  // Update eraser size
+  document.getElementById("eraserSize").addEventListener("input", (e) => {
+    eraserSize = e.target.value;
+  });
+
+  // Toggle eraser function
+  function toggleEraser() {
+    isEraser = !isEraser;
+    document.getElementById("eraserButton").classList.toggle("active", isEraser);
+  }
+
+  // Zoom function with slider
+  function zoomCanvas(value) {
+    scale = value;
+    canvas.style.transform = `scale(${scale})`;
+    canvas.style.transformOrigin = '0 0'; // Ensures scaling from the top-left corner
+  }
+
+  // Drawing events
+  canvas.addEventListener("mousedown", startPainting);
+  canvas.addEventListener("mouseup", stopPainting);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseleave", stopPainting);
+
+  // Touch events
+  canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    startPainting(e.touches[0]);
+  });
+  canvas.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    stopPainting(e.changedTouches[0]);
+  });
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    draw(e.touches[0]);
+  });
+
+  function startPainting(e) {
+    painting = true;
+    draw(e);
+  }
+
+  function stopPainting() {
+    painting = false;
+    ctx.beginPath();
+  }
+
+  function draw(e) {
+    if (!painting) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+
+    if (isEraser) {
+      // Only erase brush strokes, not imported image or PDF
+      ctx.clearRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize);
+      ctx.globalCompositeOperation = 'destination-out'; // Set to erase mode
+      ctx.beginPath();
+      ctx.arc(x, y, eraserSize / 2, 0, Math.PI * 2, false);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over'; // Reset to normal mode
+    } else {
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = "round";
+      if (sparklyMode) {
+        ctx.strokeStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      } else {
+        ctx.strokeStyle = brushColor;
+      }
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+  }
+
+  // Clear canvas
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    img = null; // Clear the image when the canvas is cleared
+  }
+
+  function saveCanvas(format) {
+    const whiteboardName = document.getElementById("whiteboardName").value || "whiteboard";
+    const link = document.createElement("a");
+    link.download = `${whiteboardName}.${format}`;
+    link.href = canvas.toDataURL(`image/${format}`);
+    link.click();
+  }
+
+  // Import multi-page PDF
+  async function importFile(event) {
+    const file = event.target.files[0];
+    if (file.type.startsWith("image/")) {
+      img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        resizeCanvas(img.width, img.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+    } else if (file.type === "application/pdf") {
+      currentPDF = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+      currentPDFPage = 1;
+      renderPDFPage(currentPDFPage);
+    }
+  }
+
+  async function renderPDFPage(pageNum) {
+    const page = await currentPDF.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 2.0 }); // Set scale for high resolution
+    resizeCanvas(viewport.width, viewport.height);
+
+    const pdfCanvas = document.createElement("canvas");
+    const pdfCtx = pdfCanvas.getContext("2d");
+    pdfCanvas.width = viewport.width;
+    pdfCanvas.height = viewport.height;
+
+    const renderContext = {
+      canvasContext: pdfCtx,
+      viewport: viewport
+    };
+    
+    await page.render(renderContext).promise;
+    
+    // Draw the PDF page onto the main canvas
+    const img = new Image();
+    img.src = pdfCanvas.toDataURL(); // Use the high-res PDF rendering
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+    };
+  }
+
+  function previousPDFPage() {
+    if (currentPDF && currentPDFPage > 1) {
+      renderPDFPage(--currentPDFPage);
+    }
+  }
+
+  function nextPDFPage() {
+    if (currentPDF && currentPDFPage < currentPDF.numPages) {
+      renderPDFPage(++currentPDFPage);
+    }
+  }
+
+  function resizeCanvas(width, height) {
+    canvas.width = width;
+    canvas.height = height;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (img) {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+  }
+</script>
+
+</body>
+</html>
