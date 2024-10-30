@@ -1,10 +1,12 @@
 {
     "images": [
-        "waveforms/image1.jpg",
-        "waveforms/image2.jpg",
-        "waveforms/image3.jpg",
-        "waveforms/image4.jpg",
+        "waveforms/1995 Chevrolet G20 5.0L - Primary & Secondary Waveforms.png",
+        "waveforms/1995 Chevrolet G20 Van - Peak & Hold Fuel Injector Voltage & Amperage Waveform.png",
+        "waveforms/1995 Chevrolet G20 Van 5.0L Primary Voltage & Current Ramping Waveforms-0002.png",
+        "waveforms/AC Generator Ripple & Amperage Output - 1995 Chevrolet  G20 5.0L-0002.png",
+        "waveforms/AC Generator Ripple 1995 Chevrolet  G20 5.0L.png",
         "waveforms/AC Generator Ripple.png",
-        "waveforms/1995 Chevrolet G20 5.0L - Primary & Secondary Waveforms.png"
+        "waveforms/DI Ignition Primary Voltage & Amperage 1995 Chevrolet  G20 5.0L-0006.png",
+        "waveforms/1995 Chevrolet G20 5.0L - Primary & Secondary Waveforms.png" 
     ]
 }
