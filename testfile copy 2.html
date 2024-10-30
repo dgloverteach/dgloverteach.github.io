@@ -1,148 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Whiteboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #toolbar {
-      margin: 10px;
-      display: flex;
-      gap: 10px;
-    }
-    #canvas {
-      border: 1px solid #000;
-      cursor: crosshair;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Reference Library</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Sidebar styles */
+        #fileList {
+            width: 25%;
+            padding: 10px;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+            height: 100vh; /* Full height */
+        }
+
+        /* Main content styles */
+        #imageDisplay {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Watermark styles */
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        /* Search bar styles */
+        #searchInput {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* List item styles */
+        .file-item {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .file-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Enhanced Whiteboard</h2>
-<div id="toolbar">
-  <label>Brush Color:
-    <input type="color" id="colorPicker" value="#000000">
-  </label>
-  <label>Brush Size:
-    <input type="range" id="brushSize" min="1" max="20" value="5">
-  </label>
-  <label>Brush Type:
-    <select id="brushType">
-      <option value="round">Round</option>
-      <option value="square">Square</option>
-      <option value="diamond">Diamond</option>
-    </select>
-  </label>
-  <input type="file" id="fileInput" accept="image/*,application/pdf">
-  <button onclick="clearCanvas()">Clear</button>
-  <button onclick="toggleEraser()">Toggle Eraser</button>
-  <button onclick="saveCanvas()">Save</button>
+<div id="fileList">
+    <input type="text" id="searchInput" placeholder="Search files..." oninput="filterFiles()">
+    <div id="files">
+        <!-- File names will be generated here -->
+        <div class="file-item" onclick="displayImage('image1.jpg')">image1.jpg</div>
+        <div class="file-item" onclick="displayImage('image2.jpg')">image2.jpg</div>
+        <div class="file-item" onclick="displayImage('image3.jpg')">image3.jpg</div>
+        <div class="file-item" onclick="displayImage('image4.jpg')">image4.jpg</div>
+        <div class="file-item" onclick="displayImage('image5.jpg')">image5.jpg</div>
+        <!-- Add more image filenames as needed -->
+    </div>
 </div>
 
-<canvas id="canvas" width="800" height="600"></canvas>
+<div id="imageDisplay">
+    <img id="selectedImage" src="" alt="Selected Image" style="display: none;">
+    <div class="watermark">A D.Glover Waveform</div>
+</div>
 
 <script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+    const images = [
+        'image1.jpg',
+        'image2.jpg',
+        'image3.jpg',
+        'image4.jpg',
+        'image5.jpg',
+        // Add more images to this array as needed
+    ];
 
-  let painting = false;
-  let eraser = false;
-  let brushColor = document.getElementById("colorPicker").value;
-  let brushSize = document.getElementById("brushSize").value;
-  let brushType = document.getElementById("brushType").value;
-
-  // Event listeners for drawing
-  canvas.addEventListener("mousedown", startPainting);
-  canvas.addEventListener("mouseup", stopPainting);
-  canvas.addEventListener("mousemove", draw);
-  canvas.addEventListener("mouseleave", stopPainting);
-
-  // Touch support
-  canvas.addEventListener("touchstart", startPainting);
-  canvas.addEventListener("touchend", stopPainting);
-  canvas.addEventListener("touchmove", draw);
-
-  // Toolbar controls
-  document.getElementById("colorPicker").addEventListener("input", (e) => {
-    brushColor = e.target.value;
-  });
-
-  document.getElementById("brushSize").addEventListener("input", (e) => {
-    brushSize = e.target.value;
-  });
-
-  document.getElementById("brushType").addEventListener("change", (e) => {
-    brushType = e.target.value;
-  });
-
-  // File input for image/PDF
-  document.getElementById("fileInput").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith("image")) {
-      loadImage(file);
-    } else if (file && file.type === "application/pdf") {
-      alert("PDF functionality requires pdf.js integration.");
-      // Placeholder for PDF functionality
-      // You would need pdf.js here to render PDF on canvas.
+    function displayImage(filename) {
+        const img = document.getElementById('selectedImage');
+        img.src = filename;
+        img.style.display = 'block'; // Show the image
     }
-  });
 
-  function startPainting(e) {
-    painting = true;
-    draw(e);
-  }
+    function filterFiles() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const files = document.querySelectorAll('.file-item');
 
-  function stopPainting() {
-    painting = false;
-    ctx.beginPath();
-  }
-
-  function draw(e) {
-    e.preventDefault(); // Prevent scrolling on touch devices
-
-    if (!painting) return;
-
-    ctx.lineWidth = brushSize;
-    ctx.lineCap = brushType;
-    ctx.strokeStyle = eraser ? "#ffffff" : brushColor;
-
-    const x = e.clientX || e.touches[0].clientX;
-    const y = e.clientY || e.touches[0].clientY;
-
-    ctx.lineTo(x - canvas.offsetLeft, y - canvas.offsetTop);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x - canvas.offsetLeft, y - canvas.offsetTop);
-  }
-
-  function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-
-  function toggleEraser() {
-    eraser = !eraser;
-  }
-
-  function saveCanvas() {
-    const link = document.createElement("a");
-    link.download = "whiteboard.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }
-
-  function loadImage(file) {
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    img.src = URL.createObjectURL(file);
-  }
+        files.forEach(file => {
+            const fileName = file.textContent.toLowerCase();
+            file.style.display = fileName.includes(searchInput) ? 'block' : 'none';
+        });
+    }
 </script>
 
 </body>
