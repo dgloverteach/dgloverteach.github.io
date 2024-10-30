@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Reference Library</title>
+    <title>Waveform Reference Library</title>
     <style>
         body {
             display: flex;
@@ -85,11 +85,11 @@
 <script>
     let images = [];
 
-    // Fetch the list of images from the server
-    fetch('/images')
+    // Fetch the list of images from the JSON file
+    fetch('Waveforms.json')
         .then(response => response.json())
         .then(data => {
-            images = data;
+            images = data.images;
             populateFileList();
         })
         .catch(error => console.error('Error fetching images:', error));
@@ -101,7 +101,7 @@
         images.forEach(file => {
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
-            fileItem.textContent = file;
+            fileItem.textContent = file.split('/').pop(); // Show only the filename
             fileItem.onclick = () => displayImage(file);
             filesDiv.appendChild(fileItem);
         });
@@ -109,7 +109,7 @@
 
     function displayImage(filename) {
         const img = document.getElementById('selectedImage');
-        img.src = `/Waveforms/${filename}`; // Set the src to the path on the server
+        img.src = filename; // Set the src to the image path
         img.style.display = 'block'; // Show the image
     }
 
