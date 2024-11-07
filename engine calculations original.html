@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automotive Engine Calculations Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        .calculation-box {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .calculation-box input {
+            margin-left: 10px;
+        }
+        .result {
+            margin-top: 10px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Automotive Engine Calculations Practice</h1>
+    
+    <!-- Student Information Form -->
+    <div>
+        <label for="student-name">Student Name: </label>
+        <input type="text" id="student-name" placeholder="Enter your name">
+        <label for="student-number">Student Number: </label>
+        <input type="text" id="student-number" placeholder="Enter your student number">
+    </div>
+    <br>
+
+    <!-- Calculation Type Selection -->
+    <div>
+        <label><input type="radio" name="calculation" value="random" checked> Random</label>
+        <label><input type="radio" name="calculation" value="displacement"> Engine Displacement</label>
+        <label><input type="radio" name="calculation" value="compression"> Compression Ratio</label>
+        <label><input type="radio" name="calculation" value="horsepower"> Horsepower</label>
+        <label><input type="radio" name="calculation" value="torque"> Torque</label>
+        <label><input type="radio" name="calculation" value="volumetric"> Volumetric Efficiency</label>
+        <label><input type="radio" name="calculation" value="thermal"> Thermal Efficiency</label>
+    </div>
+    <br>
+    <button onclick="generateQuestion()">Generate Question</button>
+    <button onclick="saveHistoryToPDF()">Save History to PDF</button>
+    <button onclick="resetHistory()">Reset History</button>
+    
+    <!-- Calculation Boxes -->
+    <div id="engine-displacement" class="calculation-box">
+        <h3>Engine Displacement</h3>
+        <p>
+            Bore: <span id="bore"></span> cm, 
+            Stroke: <span id="stroke"></span> cm, 
+            Cylinders: <span id="cylinders"></span>
+        </p>
+        <label for="displacement-answer">Your Answer (in cubic cm): </label>
+        <input type="number" id="displacement-answer">
+        <button onclick="checkDisplacement()">Check Answer</button>
+        <p id="displacement-result" class="result"></p>
+    </div>
+
+    <div id="compression-ratio" class="calculation-box">
+        <h3>Compression Ratio</h3>
+        <p>
+            Cylinder Volume: <span id="cylinder-volume"></span> cc, 
+            Combustion Chamber Volume: <span id="chamber-volume"></span> cc
+        </p>
+        <label for="compression-answer">Your Answer: </label>
+        <input type="number" step="0.01" id="compression-answer">
+        <button onclick="checkCompression()">Check Answer</button>
+        <p id="compression-result" class="result"></p>
+    </div>
+
+    <div id="horsepower-calc" class="calculation-box">
+        <h3>Horsepower</h3>
+        <p>
+            Torque: <span id="torque-hp"></span> lb-ft, 
+            RPM: <span id="rpm-hp"></span>
+        </p>
+        <label for="horsepower-answer">Your Answer (in HP): </label>
+        <input type="number" id="horsepower-answer">
+        <button onclick="checkHorsepower()">Check Answer</button>
+        <p id="horsepower-result" class="result"></p>
+    </div>
+
+    <div id="torque-calc" class="calculation-box">
+        <h3>Torque</h3>
+        <p>
+            Horsepower: <span id="hp-torque"></span> HP, 
+            RPM: <span id="rpm-torque"></span>
+        </p>
+        <label for="torque-answer">Your Answer (in lb-ft): </label>
+        <input type="number" id="torque-answer">
+        <button onclick="checkTorque()">Check Answer</button>
+        <p id="torque-result" class="result"></p>
+    </div>
+
+    <div id="volumetric-efficiency" class="calculation-box">
+        <h3>Volumetric Efficiency</h3>
+        <p>
+            Actual Air Intake: <span id="actual-air"></span> kg, 
+            Theoretical Air Intake: <span id="theoretical-air"></span> kg
+        </p>
+        <label for="volumetric-answer">Your Answer (in %): </label>
+        <input type="number" step="0.01" id="volumetric-answer">
+        <button onclick="checkVolumetric()">Check Answer</button>
+        <p id="volumetric-result" class="result"></p>
+    </div>
+
+    <div id="thermal-efficiency" class="calculation-box">
+        <h3>Thermal Efficiency</h3>
+        <p>
+            Work Output: <span id="work-output"></span> J, 
+            Heat Input: <span id="heat-input"></span> J
+        </p>
+        <label for="thermal-answer">Your Answer (in %): </label>
+        <input type="number" step="0.01" id="thermal-answer">
+        <button onclick="checkThermal()">Check Answer</button>
+        <p id="thermal-result" class="result"></p>
+    </div>
+
+    <script>
+        let history = [];
+
+        function getRandom(min, max, decimals = 2) {
+            return (Math.random() * (max - min) + min).toFixed(decimals);
+        }
+
+        function generateQuestion() {
+            const calculationType = document.querySelector('input[name="calculation"]:checked').value;
+            const types = ["displacement", "compression", "horsepower", "torque", "volumetric", "thermal"];
+            const selectedType = (calculationType === "random") ? types[Math.floor(Math.random() * types.length)] : calculationType;
+            document.querySelectorAll('.calculation-box').forEach(box => box.style.display = 'none');
+            document.getElementById(selectedType).style.display = 'block';
+
+            // Generate random values for each type
+            if (selectedType === "displacement") {
+                document.getElementById('bore').textContent = getRandom(7, 10);
+                document.getElementById('stroke').textContent = getRandom(6, 9);
+                document.getElementById('cylinders').textContent = getRandom(4, 8, 0);
+            } else if (selectedType === "compression") {
+                document.getElementById('cylinder-volume').textContent = getRandom(400, 600);
+                document.getElementById('chamber-volume').textContent = getRandom(40, 60);
+            } else if (selectedType === "horsepower") {
+                document.getElementById('torque-hp').textContent = getRandom(200, 400);
+                document.getElementById('rpm-hp').textContent = getRandom(3000, 7000, 0);
+            } else if (selectedType === "torque") {
+                document.getElementById('hp-torque').textContent = getRandom(200, 400);
+                document.getElementById('rpm-torque').textContent = getRandom(3000, 7000, 0);
+            } else if (selectedType === "volumetric") {
+                document.getElementById('actual-air').textContent = getRandom(1, 3);
+                document.getElementById('theoretical-air').textContent = getRandom(2, 4);
+            } else if (selectedType === "thermal") {
+                document.getElementById('work-output').textContent = getRandom(5000, 8000);
+                document.getElementById('heat-input').textContent = getRandom(10000, 15000);
+            }
+        }
+
+        function checkDisplacement() {
+            const bore = parseFloat(document.getElementById('bore').textContent);
+            const stroke = parseFloat(document.getElementById('stroke').textContent);
+            const cylinders = parseInt(document.getElementById('cylinders').textContent);
+            const userAnswer = parseFloat(document.getElementById('displacement-answer').value);
+            const correctAnswer = ((Math.PI / 4) * Math.pow(bore, 2) * stroke * cylinders).toFixed(2);
+            displayResult(userAnswer, correctAnswer, 'displacement-result', 'cubic cm');
+            history.push(`Engine Displacement: ${userAnswer} cubic cm (Correct Answer: ${correctAnswer} cubic cm)`);
+        }
+
+        function checkCompression() {
+            const cylinderVolume = parseFloat(document.getElementById('cylinder-volume').textContent);
+            const chamberVolume = parseFloat(document.getElementById('chamber-volume').textContent);
+            const userAnswer = parseFloat(document.getElementById('compression-answer').value);
+            const correctAnswer = ((cylinderVolume + chamberVolume) / chamberVolume).toFixed(2);
+            displayResult(userAnswer, correctAnswer, 'compression-result', '');
+            history.push(`Compression Ratio: ${userAnswer} (Correct Answer: ${correctAnswer})`);
+        }
+
+        function checkHorsepower() {
+            const torque = parseFloat(document.getElementById('torque-hp').textContent);
+            const rpm = parseFloat(document.getElementById('rpm-hp').textContent);
+            const userAnswer = parseFloat(document.getElementById('horsepower-answer').value);
+            const correctAnswer = ((torque * rpm) / 5252).toFixed(2);
+            displayResult(userAnswer, correctAnswer, 'horsepower-result', 'HP');
+            history.push(`Horsepower: ${userAnswer} HP (Correct Answer: ${correctAnswer} HP)`);
+        }
+
+        function checkTorque() {
+            const hp = parseFloat(document.getElementById('hp-torque').textContent);
+            const rpm = parseFloat(document.getElementById('rpm-torque').textContent);
+            const userAnswer = parseFloat(document.getElementById('torque-answer').value);
+            const correctAnswer = ((hp * 5252) / rpm).toFixed(2);
+            displayResult(userAnswer, correctAnswer, 'torque-result', 'lb-ft');
+            history.push(`Torque: ${userAnswer} lb-ft (Correct Answer: ${correctAnswer} lb-ft)`);
+        }
+
+        function checkVolumetric() {
+            const actualAir = parseFloat(document.getElementById('actual-air').textContent);
+            const theoreticalAir = parseFloat(document.getElementById('theoretical-air').textContent);
+            const userAnswer = parseFloat(document.getElementById('volumetric-answer').value);
+            const correctAnswer = ((actualAir / theoreticalAir) * 100).toFixed(2);
+            displayResult(userAnswer, correctAnswer, 'volumetric-result', '%');
+            history.push(`Volumetric Efficiency: ${userAnswer}% (Correct Answer: ${correctAnswer}%)`);
+        }
+
+        function checkThermal() {
+            const workOutput = parseFloat(document.getElementById('work-output').textContent);
+            const heatInput = parseFloat(document.getElementById('heat-input').textContent);
+            const userAnswer = parseFloat(document.getElementById('thermal-answer').value);
+            const correctAnswer = ((workOutput / heatInput) * 100).toFixed(2);
+            displayResult(userAnswer, correctAnswer, 'thermal-result', '%');
+            history.push(`Thermal Efficiency: ${userAnswer}% (Correct Answer: ${correctAnswer}%)`);
+        }
+
+        function displayResult(userAnswer, correctAnswer, resultElementId, unit) {
+            const resultElement = document.getElementById(resultElementId);
+            if (Math.abs(userAnswer - correctAnswer) < 0.1) {
+                resultElement.textContent = `Correct! The answer is ${correctAnswer} ${unit}.`;
+            } else {
+                resultElement.textContent = `Incorrect. The correct answer is ${correctAnswer} ${unit}.`;
+            }
+        }
+
+        function saveHistoryToPDF() {
+            if (history.length === 0) {
+                alert("No history to save.");
+                return;
+            }
+
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentNumber = document.getElementById('student-number').value.trim();
+
+            if (!studentName || !studentNumber) {
+                alert("Please enter both student name and number.");
+                return;
+            }
+
+            const doc = new jsPDF();
+            doc.setFontSize(12);
+            doc.text(`Student Name: ${studentName}`, 10, 10);
+            doc.text(`Student Number: ${studentNumber}`, 10, 20);
+            doc.text('Calculation History:', 10, 30);
+
+            history.forEach((entry, index) => {
+                doc.text(`${index + 1}. ${entry}`, 10, 40 + index * 10);
+            });
+
+            const filename = `${studentName}_${studentNumber}_Calculation_History.pdf`;
+            doc.save(filename);
+        }
+
+        function resetHistory() {
+            const confirmReset = confirm("Are you sure you want to reset the history?");
+            if (confirmReset) {
+                history = [];
+                alert("History has been reset.");
+            }
+        }
+
+        // Show a question by default
+        window.onload = generateQuestion;
+    </script>
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</body>
+</html>
