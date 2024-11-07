@@ -85,8 +85,12 @@
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       engineData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-      // Automatically generate a question after loading data
-      generateQuestion();
+      // Indicate that data has been loaded
+      document.getElementById("errorMessage").innerText = "";
+
+      // Enable the generate question button once data is loaded
+      document.getElementById("generateQuestionBtn").disabled = false;
+
     })
     .catch(error => {
       console.error("Error loading .ods file:", error);
@@ -167,7 +171,7 @@
       feedback.classList.remove("incorrect");
       questionsCorrect++;
     } else {
-      feedback.innerText = `Incorrect! The correct answer is ${currentQuestion.correctAnswer}`;
+      feedback.innerText = `Incorrect. The correct answer is ${currentQuestion.correctAnswer}`;
       feedback.classList.add("incorrect");
       feedback.classList.remove("correct");
       questionsIncorrect++;
@@ -199,5 +203,6 @@
     pdf.save(`${name}_${studentNumber}_Engine_Displacement_Results.pdf`);
   }
 </script>
+
 </body>
 </html>
