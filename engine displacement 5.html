@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Engine Calculation Practice</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f9; }
+    .container { max-width: 700px; margin: auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); }
+    h1 { text-align: center; color: #333; }
+    .form-group { margin-bottom: 15px; }
+    .inline-group { display: flex; gap: 15px; }
+    label { font-weight: bold; display: block; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; }
+    button { background-color: #5a67d8; color: #fff; cursor: pointer; }
+    button:hover { background-color: #434190; }
+    #result, #feedback { margin-top: 20px; color: #333; font-weight: bold; }
+    .error { color: #e53e3e; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Engine Displacement Calculation Practice</h1>
+  
+  <!-- User Information -->
+  <div class="form-group inline-group">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" placeholder="Enter your name">
+    </div>
+    <div>
+      <label for="studentNumber">Student Number:</label>
+      <input type="text" id="studentNumber" placeholder="Enter your student number">
+    </div>
+  </div>
+
+  <!-- Dropdown to select engine configuration from .ods file -->
+  <div class="form-group">
+    <label for="engineSelect">Select Engine:</label>
+    <select id="engineSelect" onchange="populateEngineFields()">
+      <option value="random">-- Random Engine --</option>
+    </select>
+  </div>
+  
+  <!-- Form to select calculation type -->
+  <div class="form-group">
+    <label for="calculationType">Choose Calculation Type:</label>
+    <select id="calculationType">
+      <option value="random">Random Question</option>
+      <option value="engineDisplacement">Total Engine Displacement</option>
+      <option value="cylinderDisplacement">Individual Cylinder Displacement</option>
+      <option value="bore">Bore</option>
+      <option value="stroke">Stroke</option>
+    </select>
+  </div>
+
+  <!-- Unit Selection -->
+  <div class="form-group">
+    <label>Choose Unit:</label>
+    <select id="unitSelect">
+      <option value="inches">Inches & Cubic Inches</option>
+      <option value="mm">Millimeters & Cubic Centimeters</option>
+    </select>
+  </div>
+
+  <button onclick="generateQuestion()">Generate Question</button>
+  
+  <!-- Display Generated Question and Answer Input -->
+  <h2 id="result"></h2>
+  <div id="engineSpecs"></div>  <!-- Display other engine specifications here -->
+  <div id="feedback"></div>
+  <div class="form-group">
+    <label for="userAnswer">Your Answer:</label>
+    <input type="text" id="userAnswer" placeholder="Enter your answer">
+  </div>
+  <button onclick="checkAnswer()">Check Answer</button>
+  
+  <!-- Notification for Question Count -->
+  <p id="questionCount" class="error"></p>
+  <button onclick="saveToPDF()">Save to PDF</button>
+</div>
+
+<script>
+  let engineData = {};
+  let correctAnswers = 0;
+  let incorrectAnswers = 0;
+  let totalQuestions = 0;
+  let questionHistory = [];  // Store question history for PDF
+
+  // Load .ods file
+  fetch("engine displacement numbers.ods")
+    .then(response => response.arrayBuffer())
+    .then(data => {
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      engineData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      const engineSelect = document.getElementById("engineSelect");
+      for (let i = 1; i < engineData.length; i++) {
+        const engineName = engineData[i][0];
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = engineName;
+        engineSelect.appendChild(option);
+      }
+    })
+    .catch(error => console.error("Error loading .ods file:", error));
+
+  function populateEngineFields() {
+    document.getElementById("errorMessage").innerText = "";
+  }
+
+  function generateQuestion() {
+    const calculationType = document.getElementById("calculationType").value;
+    let engineIndex = document.getElementById("engineSelect").value;
+    const unit = document.getElementById("unitSelect").value;
+    const result = document.getElementById("result");
+
+    if (engineIndex === "random") {
+      engineIndex = Math.floor(Math.random() * (engineData.length - 1)) + 1;
+    }
+
+    const data = engineData[engineIndex];
+    totalQuestions++;
+    document.getElementById("questionCount").innerText = `Questions Attempted: ${totalQuestions}`;
+    document.getElementById("feedback").innerText = "";
+
+    if (calculationType === "random") {
+      const types = ["engineDisplacement", "cylinderDisplacement", "bore", "stroke"];
+      generateQuestionOfType(types[Math.floor(Math.random() * types.length)], data, unit);
+    } else {
+      generateQuestionOfType(calculationType, data, unit);
+    }
+  }
+
+  function generateQuestionOfType(type, data, unit) {
+    const result = document.getElementById("result");
+    let questionText = "";
+    let questionAnswer = "";
+
+    // Set up question based on type and populate other specs
+    if (type === "engineDisplacement") {
+      questionText = `Calculate the Total Engine Displacement in ${unit === "inches" ? "cubic inches" : "cubic centimeters"}.`;
+      questionAnswer = unit === "inches" ? data[3] : data[6];
+    } else if (type === "cylinderDisplacement") {
+      questionText = `Calculate the Individual Cylinder Displacement in ${unit === "inches" ? "cubic inches" : "cubic centimeters"}.`;
+      questionAnswer = unit === "inches" ? data[4] : data[7];
+    } else if (type === "bore") {
+      questionText = `Calculate the Bore in ${unit === "inches" ? "inches" : "millimeters"}.`;
+      questionAnswer = unit === "inches" ? data[1] : data[4];
+    } else if (type === "stroke") {
+      questionText = `Calculate the Stroke in ${unit === "inches" ? "inches" : "millimeters"}.`;
+      questionAnswer = unit === "inches" ? data[2] : data[5];
+    }
+    
+    result.innerText = questionText;
+    
+    // Display other engine specs
+    document.getElementById("engineSpecs").innerText = `Other Engine Specifications:
+    - Bore: ${data[1]} inches, ${data[4]} mm
+    - Stroke: ${data[2]} inches, ${data[5]} mm
+    - Total Displacement: ${data[3]} cubic inches, ${data[6]} cc
+    - Cylinder Displacement: ${data[4]} cubic inches, ${data[7]} cc
+    - Cylinders: ${data[8]}`;
+
+    // Store the question and answer for checking
+    questionHistory.push({ question: questionText, correctAnswer: questionAnswer });
+  }
+
+  function checkAnswer() {
+    const userAnswer = document.getElementById("userAnswer").value.trim();
+    const currentQuestion = questionHistory[questionHistory.length - 1];
+
+    if (userAnswer === "") {
+      document.getElementById("feedback").innerText = "Please enter an answer.";
+      return;
+    }
+
+    if (userAnswer === currentQuestion.correctAnswer) {
+      correctAnswers++;
+      document.getElementById("feedback").innerText = "Correct!";
+      currentQuestion.userAnswer = userAnswer;
+      currentQuestion.result = "Correct";
+    } else {
+      incorrectAnswers++;
+      document.getElementById("feedback").innerText = "Incorrect. Try again!";
+      currentQuestion.userAnswer = userAnswer;
+      currentQuestion.result = "Incorrect";
+    }
+
+    document.getElementById("userAnswer").value = "";
+    document.getElementById("questionCount").innerText = `Questions Attempted: ${totalQuestions}, Correct: ${correctAnswers}, Incorrect: ${incorrectAnswers}`;
+  }
+
+  function saveToPDF() {
+    const name = document.getElementById("name").value;
+    const studentNumber = document.getElementById("studentNumber").value;
+
+    if (!name || !studentNumber) {
+      document.getElementById("errorMessage").innerText = "Please enter your name and student number.";
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    pdf.text(`Name: ${name}`, 10, 10);
+    pdf.text(`Student Number: ${studentNumber}`, 10, 20);
+    pdf.text(`Questions Attempted: ${totalQuestions}`, 10, 30);
+    pdf.text(`Correct Answers: ${correctAnswers}`, 10, 40);
+    pdf.text(`Incorrect Answers: ${incorrectAnswers}`, 10, 50);
+
+    questionHistory.forEach((entry, index) => {
+      pdf.text(`Q${index + 1}: ${entry.question}`, 10, 60 + index * 20);
+      pdf.text(`Your Answer: ${entry.userAnswer || "N/A"} - ${entry.result}`, 10, 70 + index * 20);
+    });
+
+    const filename = `${name}-${studentNumber}-engine-displacement-calculations.pdf`;
+    pdf.save(filename);
+  }
+</script>
+</body>
+</html>
