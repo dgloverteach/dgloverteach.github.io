@@ -143,19 +143,19 @@
     // Set up question based on type
     if (type === "engineDisplacement") {
       questionText = `Calculate the Total Engine Displacement in ${unit === "inches" ? "cubic inches" : "cubic centimeters"}.`;
-      questionAnswer = unit === "inches" ? data[3] : data[6];
+      questionAnswer = unit === "inches" ? data[3] : data[7];
       excludedSpec = "Total Displacement";
     } else if (type === "cylinderDisplacement") {
       questionText = `Calculate the Individual Cylinder Displacement in ${unit === "inches" ? "cubic inches" : "cubic centimeters"}.`;
-      questionAnswer = unit === "inches" ? data[4] : data[7];
+      questionAnswer = unit === "inches" ? data[4] : data[8];
       excludedSpec = "Cylinder Displacement";
     } else if (type === "bore") {
       questionText = `Calculate the Bore in ${unit === "inches" ? "inches" : "millimeters"}.`;
-      questionAnswer = unit === "inches" ? data[1] : data[4];
+      questionAnswer = unit === "inches" ? data[1] : data[5];
       excludedSpec = "Bore";
     } else if (type === "stroke") {
       questionText = `Calculate the Stroke in ${unit === "inches" ? "inches" : "millimeters"}.`;
-      questionAnswer = unit === "inches" ? data[2] : data[5];
+      questionAnswer = unit === "inches" ? data[2] : data[6];
       excludedSpec = "Stroke";
     }
     
