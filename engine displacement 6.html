@@ -164,11 +164,11 @@
     // Display other engine specs excluding the one asked in the question
     document.getElementById("engineSpecs").innerText = `Engine: ${data[0]}
       Specifications:
-      ${excludedSpec !== "Bore" ? `- Bore: ${data[1]} inches, ${data[4]} mm` : ""}
-      ${excludedSpec !== "Stroke" ? `- Stroke: ${data[2]} inches, ${data[5]} mm` : ""}
-      ${excludedSpec !== "Total Displacement" ? `- Total Displacement: ${data[3]} cubic inches, ${data[6]} cc` : ""}
-      ${excludedSpec !== "Cylinder Displacement" ? `- Cylinder Displacement: ${data[4]} cubic inches, ${data[7]} cc` : ""}
-      - Cylinders: ${data[8]}`;
+      ${excludedSpec !== "Bore" ? `- Bore: ${data[1]} inches, ${data[5]} mm` : ""}
+      ${excludedSpec !== "Stroke" ? `- Stroke: ${data[2]} inches, ${data[6]} mm` : ""}
+      ${excludedSpec !== "Total Displacement" ? `- Total Displacement: ${data[3]} cubic inches, ${data[7]} cc` : ""}
+      ${excludedSpec !== "Cylinder Displacement" ? `- Cylinder Displacement: ${data[4]} cubic inches, ${data[8]} cc` : ""}
+      - Cylinders: ${data[9]}`;
 
     // Store the question and answer for checking
     currentQuestion = { questionText, correctAnswer: questionAnswer, answered: false };
