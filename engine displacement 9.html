@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Engine Calculation Practice</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f9; }
+    .container { max-width: 700px; margin: auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); }
+    h1 { text-align: center; color: #333; }
+    .form-group { margin-bottom: 15px; }
+    .inline-group { display: flex; gap: 15px; }
+    label { font-weight: bold; display: block; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; }
+    button { background-color: #5a67d8; color: #fff; cursor: pointer; }
+    button:hover { background-color: #434190; }
+    #result, #feedback { margin-top: 20px; color: #333; font-weight: bold; }
+    .error { color: #e53e3e; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Engine Displacement Calculation Practice</h1>
+
+  <div class="form-group inline-group">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" placeholder="Enter your name">
+    </div>
+    <div>
+      <label for="studentNumber">Student Number:</label>
+      <input type="text" id="studentNumber" placeholder="Enter your student number">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="engineSelect">Select Engine:</label>
+    <select id="engineSelect" onchange="populateEngineFields()">
+      <option value="random">-- Random Engine --</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="calculationType">Choose Calculation Type:</label>
+    <select id="calculationType">
+      <option value="random">Random Question</option>
+      <option value="engineDisplacement">Total Engine Displacement</option>
+      <option value="cylinderDisplacement">Individual Cylinder Displacement</option>
+      <option value="bore">Bore</option>
+      <option value="stroke">Stroke</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Choose Unit:</label>
+    <select id="unitSelect">
+      <option value="inches">Inches & Cubic Inches</option>
+      <option value="mm">Millimeters & Cubic Centimeters</option>
+    </select>
+  </div>
+
+  <button id="generateBtn" onclick="generateQuestion()" disabled>Generate Question</button>
+
+  <h2 id="result"></h2>
+  <div id="engineSpecs"></div>
+  <div id="feedback"></div>
+  <div class="form-group">
+    <label for="userAnswer">Your Answer:</label>
+    <input type="text" id="userAnswer" placeholder="Enter your answer">
+  </div>
+  <button onclick="submitAnswer()">Submit Answer</button>
+
+  <p id="questionCount" class="error"></p>
+  <button onclick="saveToPDF()">Save to PDF</button>
+</div>
+
+<script>
+  let engineData = {};
+  let correctAnswers = 0;
+  let incorrectAnswers = 0;
+  let totalQuestions = 0;
+  let questionHistory = [];
+  let currentQuestion = null;
+  let answeredQuestions = new Set(); // Store types of answered questions
+  
+  fetch("engine displacement numbers.ods")
+    .then(response => response.arrayBuffer())
+    .then(data => {
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      const engineSelect = document.getElementById("engineSelect");
+      for (let i = 1; i < rawData.length; i++) {
+        const row = rawData[i].map(value => (typeof value === 'number' ? value.toFixed(3) : value));
+        engineData[i] = row;
+
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = row[0];
+        engineSelect.appendChild(option);
+      }
+
+      document.getElementById("generateBtn").disabled = false;
+    })
+    .catch(error => console.error("Error loading .ods file:", error));
+
+  function generateQuestion() {
+    if (currentQuestion && !currentQuestion.answered) {
+      document.getElementById("feedback").innerText = "Please submit an answer before generating a new question.";
+      return;
+    }
+
+    const calculationType = document.getElementById("calculationType").value;
+    if (answeredQuestions.has(calculationType)) {
+      document.getElementById("feedback").innerText = "You have already solved this question type. Please try a different one.";
+      return;
+    }
+
+    let engineIndex = document.getElementById("engineSelect").value;
+    const unit = document.getElementById("unitSelect").value;
+
+    if (engineIndex === "random") {
+      engineIndex = Math.floor(Math.random() * (Object.keys(engineData).length - 1)) + 1;
+    }
+
+    const data = engineData[engineIndex];
+    totalQuestions++;
+    document.getElementById("questionCount").innerText = `Questions Attempted: ${totalQuestions}`;
+    document.getElementById("feedback").innerText = "";
+
+    if (calculationType === "random") {
+      const types = ["engineDisplacement", "cylinderDisplacement", "bore", "stroke"];
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      if (answeredQuestions.has(randomType)) {
+        document.getElementById("feedback").innerText = "Randomly selected question type has already been answered. Please try another.";
+        return;
+      }
+      generateQuestionOfType(randomType, data, unit, engineIndex);
+    } else {
+      generateQuestionOfType(calculationType, data, unit, engineIndex);
+    }
+  }
+
+  function generateQuestionOfType(type, data, unit, engineIndex) {
+    answeredQuestions.add(type); // Mark the question type as answered
+    const result = document.getElementById("result");
+    let questionText = "";
+    let questionAnswer = "";
+    let excludedSpec = "";
+
+    if (type === "engineDisplacement") {
+      questionText = `Calculate the Total Engine Displacement in ${unit === "inches" ? "cubic inches" : "cubic centimeters"}.`;
+      questionAnswer = unit === "inches" ? data[3] : data[7];
+      excludedSpec = "Total Displacement";
+    } else if (type === "cylinderDisplacement") {
+      questionText = `Calculate the Individual Cylinder Displacement in ${unit === "inches" ? "cubic inches" : "cubic centimeters"}.`;
+      questionAnswer = unit === "inches" ? data[4] : data[8];
+      excludedSpec = "Cylinder Displacement";
+    } else if (type === "bore") {
+      questionText = `Calculate the Bore in ${unit === "inches" ? "inches" : "millimeters"}.`;
+      questionAnswer = unit === "inches" ? data[1] : data[5];
+      excludedSpec = "Bore";
+    } else if (type === "stroke") {
+      questionText = `Calculate the Stroke in ${unit === "inches" ? "inches" : "millimeters"}.`;
+      questionAnswer = unit === "inches" ? data[2] : data[6];
+      excludedSpec = "Stroke";
+    }
+
+    result.innerText = questionText;
+
+    document.getElementById("engineSpecs").innerText = `Engine: ${data[0]}
+      Specifications:
+      ${excludedSpec !== "Bore" ? `- Bore: ${data[1]} inches, ${data[5]} mm` : ""}
+      ${excludedSpec !== "Stroke" ? `- Stroke: ${data[2]} inches, ${data[6]} mm` : ""}
+      ${excludedSpec !== "Total Displacement" ? `- Total Displacement: ${data[3]} cubic inches, ${data[7]} cc` : ""}
+      ${excludedSpec !== "Cylinder Displacement" ? `- Cylinder Displacement: ${data[4]} cubic inches, ${data[8]} cc` : ""}
+      - Cylinders: ${data[9]}`;
+
+    currentQuestion = { questionText, correctAnswer: questionAnswer, answered: false };
+    questionHistory.push(currentQuestion);
+  }
+
+  function submitAnswer() {
+    const userAnswer = document.getElementById("userAnswer").value.trim();
+    const feedback = document.getElementById("feedback");
+
+    if (currentQuestion.answered) {
+      feedback.innerText = "This question has already been answered.";
+      return;
+    }
+
+    if (userAnswer === "") {
+      feedback.innerText = "Please enter an answer.";
+      return;
+    }
+
+    const numericUserAnswer = parseFloat(userAnswer);
+    const numericCorrectAnswer = parseFloat(currentQuestion.correctAnswer);
+
+    if (numericUserAnswer === numericCorrectAnswer) {
+      correctAnswers++;
+      feedback.innerText = `Correct! Your answer: ${numericUserAnswer}, Correct answer: ${numericCorrectAnswer}.`;
+      currentQuestion.result = "Correct";
+    } else {
+      incorrectAnswers++;
+      feedback.innerText = `Incorrect. Your answer: ${numericUserAnswer}, Correct answer: ${numericCorrectAnswer}.`;
+      currentQuestion.result = "Incorrect";
+    }
+
+    currentQuestion.userAnswer = numericUserAnswer;
+    currentQuestion.answered = true;
+    document.getElementById("userAnswer").value = "";
+    document.getElementById("questionCount").innerText = `Questions Attempted: ${totalQuestions}, Correct: ${correctAnswers}, Incorrect: ${incorrectAnswers}`;
+
+    document.getElementById("generateBtn").disabled = false;
+  }
+
+  function saveToPDF() {
+    const name = document.getElementById("name").value;
+    const studentNumber = document.getElementById("studentNumber").value;
+
+    if (!name || !studentNumber) {
+      document.getElementById("errorMessage").innerText = "Please enter your name and student number.";
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    pdf.text(`Name: ${name}`, 10, 10);
+    pdf.text(`Student Number: ${studentNumber}`, 10, 20);
+    pdf.text(`Questions Attempted: ${totalQuestions}`, 10, 30);
+    pdf.text(`Correct Answers: ${correctAnswers}`, 10, 40);
+    pdf.text(`Incorrect Answers: ${incorrectAnswers}`, 10, 50);
+
+    questionHistory.forEach((entry, index) => {
+      pdf.text(`Q${index + 1}: ${entry.questionText}`, 10, 60 + index * 20);
+      pdf.text(`Your Answer: ${entry.userAnswer || "N/A"} - Correct Answer: ${entry.correctAnswer} - ${entry.result}`, 10, 70 + index * 20);
+    });
+
+    const filename = `${name}-${studentNumber}-engine-displacement-calculations.pdf`;
+    pdf.save(filename);
+  }
+</script>
+</body>
+</html>
